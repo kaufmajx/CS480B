@@ -17,31 +17,19 @@ class WordFinderTest
   WordFinder wf;
 
   @Test
-  void testTest()
-  {
-    assertTrue("This will succeed.", true);
-    // assertTrue("This will fail!", false);
-
-    assertFalse("This will succeed.", false);
-    // assertFalse("This will fail!", true);
-
-    assertEquals(1, 1);
-  }
-
-  @Test
-  void constructorPass()
+  void ConstructorPass()
   {
     wf = new WordFinder("street-names.txt");
   }
 
   @Test
-  void constructorIOEx()
+  void ConstructorIOEx()
   {
     wf = new WordFinder("fake-names.txt");
   }
 
   @Test
-  void findTest()
+  void FindTest()
   {
     wf = new WordFinder("street-names.txt");
     String match = wf.find("Ma");

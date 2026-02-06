@@ -3,14 +3,24 @@ package text;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.TreeSet;
 
+/**
+ * WordFinder class.
+ *
+ * @author Tenley Kennett & Jelal Kaufman
+ * @version 2/5
+ */
 public final class WordFinder
 {
   private TreeSet<String> words;
 
-  public WordFinder(String fileName)
+  /**
+   * Constructor.
+   * 
+   * @param fileName
+   */
+  public WordFinder(final String fileName)
   {
     words = new TreeSet<String>();
 
@@ -21,7 +31,7 @@ public final class WordFinder
       // read file line by line and add them to the TreeSet
       while ((line = in.readLine()) != null)
       {
-        words.add(line);
+        words.add(line.trim());
       }
     }
     catch (IOException e)
@@ -30,22 +40,26 @@ public final class WordFinder
     }
   }
 
-  public String find(String prefix)
+  /**
+   * Find the nearest word in the TreeSet from a prefix.
+   * 
+   * @param prefix
+   * @return closest word
+   */
+  public String find(final String prefix)
   {
-    TreeSet tailSet = (TreeSet<String>) words.tailSet(prefix);
-    if (tailSet.isEmpty())
+    String candidate = words.ceiling(prefix);
+    if (candidate == null)
     {
       return null;
     }
 
-    Iterator<String> it = tailSet.iterator();
-    String firstWord = it.next();
-
-    if (firstWord.startsWith(prefix))
+    if (candidate.equals(prefix)) // If we already typed the whole word
     {
-      return firstWord.trim();
+      // try the next one
+      candidate = words.higher(candidate);
     }
 
-    return null;
+    return candidate.startsWith(prefix) ? candidate.trim() : null;
   }
 }
