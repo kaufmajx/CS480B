@@ -1,7 +1,5 @@
 package gui;
 
-import java.io.IOException;
-
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -22,7 +20,7 @@ public class CompletingDocument extends PlainDocument {
 	// @Override
 	// TODO: Implements autocomplete
 	public void insertString(int offset, String s, AttributeSet as) throws BadLocationException {
-		if (s == null || offset < 0 || s.isEmpty())
+		if (offset < 0 || s == null || s.isEmpty())
 			return;
 
 		// inputs what the user actually typed
@@ -52,11 +50,6 @@ public class CompletingDocument extends PlainDocument {
 	 * Set up word finder
 	 */
 	public void setWordList(String fileName) {
-		// try {
 		finder = new WordFinder(fileName);
-		// }
-		// catch (IOException e) {
-		// e.printStackTrace();
-		// }
 	}
 }
