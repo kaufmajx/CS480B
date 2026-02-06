@@ -43,7 +43,7 @@ public final class WordFinder
 
     if (firstWord.startsWith(prefix))
     {
-      return firstWord;
+      return firstWord.trim();
     }
 
     return null;

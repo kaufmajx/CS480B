@@ -1,5 +1,6 @@
 package testing;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,20 +31,32 @@ class WordFinderTest
   @Test
   void constructorPass()
   {
-    // try {
     wf = new WordFinder("street-names.txt");
-    // }
-    // catch (IOException e) { fail(); }
   }
 
-  // @Test
-  // void constructorFail() {
-  //// try
-  //// {
-  // wf = new WordFinder("fake-file.txt");
-  // fail();
-  //// }
-  //// catch (IOException e) { /* Pass */}
-  // }
-  //
+  @Test
+  void constructorIOEx()
+  {
+    wf = new WordFinder("fake-names.txt");
+  }
+
+  @Test
+  void findTest()
+  {
+    wf = new WordFinder("street-names.txt");
+    String match = wf.find("Ma");
+    assertEquals("Mabe", match);
+
+    String match2 = wf.find("Mini");
+    assertNotEquals("Miniland", match2);
+
+    // tailSet will with "Mac" (which doesn't start with "Mabz")
+    String betweenWords = wf.find("Mabz");
+    assertEquals(null, betweenWords);
+
+    String noMatch = wf.find("unreal st");
+    assertEquals(null, noMatch);
+
+  }
+
 }
