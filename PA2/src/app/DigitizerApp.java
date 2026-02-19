@@ -17,10 +17,8 @@ import javax.swing.JRadioButton;
 
 import gui.*;
 
-
 /**
- * An application that can be used to digitize something 
- * (in display coordinates).
+ * An application that can be used to digitize something (in display coordinates).
  * 
  * @author Prof. David Bernstein, James Madison University
  * @version 1.0
@@ -29,7 +27,7 @@ public class DigitizerApp implements ActionListener, Runnable
 {
   private DigitizerPanel dp;
   private JRadioButton addButton, deleteButton;
-  
+
   /**
    * The code to run in the event dispatch thread.
    */
@@ -39,9 +37,9 @@ public class DigitizerApp implements ActionListener, Runnable
     JFrame frame = new JFrame("Way - Digitizer");
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(700, 700);
-    JPanel contentPane = (JPanel)frame.getContentPane();
+    JPanel contentPane = (JPanel) frame.getContentPane();
     contentPane.setLayout(new BorderLayout());
-    
+
     // Setup the ortho photo
     BufferedImage ortho;
     try
@@ -52,11 +50,11 @@ public class DigitizerApp implements ActionListener, Runnable
     {
       ortho = null;
     }
-    
+
     // Setup the DigitizerPanel
     dp = new DigitizerPanel(ortho);
     contentPane.add(dp, BorderLayout.CENTER);
-    
+
     // Setup the opearing mode panel
     JPanel south = new JPanel();
     south.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -71,20 +69,22 @@ public class DigitizerApp implements ActionListener, Runnable
     modeGroup.add(addButton);
     modeGroup.add(deleteButton);
     contentPane.add(south, BorderLayout.SOUTH);
-    
+
     frame.setVisible(true);
   }
-  
+
   /**
-   * Handle actionPerformed messages. Specifically, change the
-   * operating mode of the DigitizerPanel.
+   * Handle actionPerformed messages. Specifically, change the operating mode of the DigitizerPanel.
    * 
-   * @param evt The event that generated the message
+   * @param evt
+   *          The event that generated the message
    */
   public void actionPerformed(final ActionEvent evt)
   {
-    if (addButton.isSelected()) dp.setMode(DigitizerPanel.ADD);
-    else dp.setMode(DigitizerPanel.DELETE);
+    if (addButton.isSelected())
+      dp.setMode(DigitizerPanel.ADD);
+    else
+      dp.setMode(DigitizerPanel.DELETE);
   }
 
 }

@@ -15,150 +15,177 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-public class DigitizerPanel extends JPanel implements MouseMotionListener, MouseListener {
+public class DigitizerPanel extends JPanel implements MouseMotionListener, MouseListener
+{
 
-	private static final long serialVersionUID = 1L;
-	public static final int ADD = 0;
-	public static final int DELETE = 1;
+  private static final long serialVersionUID = 1L;
+  public static final int ADD = 0;
+  public static final int DELETE = 1;
 
-	private BufferedImage ortho;
-	private DigitizerDocument model;
-	private int mode;
+  private BufferedImage ortho;
+  private DigitizerDocument model;
+  private int mode;
 
-	private Point newLineStart;
-	private Point newLineEnd;
-	private ArrayList<double[]> currLine;
+  private Point newLineStart;
+  private Point newLineEnd;
+  private ArrayList<double[]> currLine;
 
-	private boolean drawing;
+  private boolean drawing;
 
-	public DigitizerPanel(BufferedImage ortho) {
-		this.ortho = ortho;
-		this.model = new DisplayDigitizerDocument(this);
-		
-		addMouseListener(this);
-		addMouseMotionListener(this);
-	}
+  public DigitizerPanel(BufferedImage ortho)
+  {
+    this.ortho = ortho;
+    this.model = new DisplayDigitizerDocument(this);
 
-	private void calcNewLinePoints(Point p1, Point p2) {
-		currLine = new ArrayList<>();
-		if (p1 != null && p2 != null) {
-			double[] d1 = new double[] { p1.getX(), p1.getY() };
-			double[] d2 = new double[] { p2.getX(), p2.getY() };
-			currLine.add(d1);
-			currLine.add(d2);
-		}
-	}
+    addMouseListener(this);
+    addMouseMotionListener(this);
+  }
 
-	public DigitizerDocument createDefaultMode() {
-		return model;
-	}
+  private void calcNewLinePoints(Point p1, Point p2)
+  {
+    currLine = new ArrayList<>();
+    if (p1 != null && p2 != null)
+    {
+      double[] d1 = new double[] {p1.getX(), p1.getY()};
+      double[] d2 = new double[] {p2.getX(), p2.getY()};
+      currLine.add(d1);
+      currLine.add(d2);
+    }
+  }
 
-	public List<Line2D> getLines() {
-		return this.model.getLines();
-	}
+  public DigitizerDocument createDefaultMode()
+  {
+    return model;
+  }
 
-	public void paint(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
+  public List<Line2D> getLines()
+  {
+    return this.model.getLines();
+  }
 
-		// clears view
-		super.paint(g2);
+  public void paint(Graphics g)
+  {
+    Graphics2D g2 = (Graphics2D) g;
 
-		// draw photo
-		g2.drawImage(ortho, null, ADD, ADD);
+    // clears view
+    super.paint(g2);
 
-		// add lines
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    // draw photo
+    g2.drawImage(ortho, null, ADD, ADD);
 
-		// add line currently being drawn
-		if (drawing) {
+    // add lines
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			g2.setPaint(Color.YELLOW);
-			g2.draw(new Line2D.Double(currLine.get(0)[0], currLine.get(0)[1], currLine.get(1)[0], currLine.get(1)[1]));
+    // add line currently being drawn
+    if (drawing)
+    {
 
-		}
-		for (Line2D line : model.getLines()) {
-			g2.setPaint(Color.GREEN);
-			g2.draw(line);
-		}
+      g2.setPaint(Color.YELLOW);
+      g2.draw(new Line2D.Double(currLine.get(0)[0], currLine.get(0)[1], currLine.get(1)[0],
+          currLine.get(1)[1]));
 
-	}
+    }
+    for (Line2D line : model.getLines())
+    {
+      g2.setPaint(Color.GREEN);
+      g2.draw(line);
+    }
 
-	public void setMode(int mode) {
-		this.mode = mode;
-	}
+  }
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if (mode == ADD) {
-			newLineStart = e.getPoint();
-		} else if (mode == DELETE) {
-			model.removeLine(model.getClosest(new double[] { e.getPoint().getX(), e.getPoint().getY() }));
-		}
-		model.addLine(new double[] { 3, 3 }, new double[] { 8, 5 });
-		paint(getGraphics());
-	}
+  public void setMode(int mode)
+  {
+    this.mode = mode;
+  }
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if (mode == ADD) {
-			newLineStart = e.getPoint();
-			drawing = true;
-			calcNewLinePoints(newLineStart, newLineStart);
-		} 
-//		else if (mode == DELETE) {
-//			newLineStart = e.getPoint();
-//		}
-	}
+  @Override
+  public void mouseClicked(MouseEvent e)
+  {
+    if (mode == ADD)
+    {
+      newLineStart = e.getPoint();
+    }
+    else if (mode == DELETE)
+    {
+      model.removeLine(model.getClosest(new double[] {e.getPoint().getX(), e.getPoint().getY()}));
+    }
+    model.addLine(new double[] {3, 3}, new double[] {8, 5});
+    paint(getGraphics());
+  }
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		if (mode == ADD) {
-			drawing = false;
-			newLineEnd = e.getPoint();
-			calcNewLinePoints(newLineStart, newLineEnd);
+  @Override
+  public void mousePressed(MouseEvent e)
+  {
+    if (mode == ADD)
+    {
+      newLineStart = e.getPoint();
+      drawing = true;
+      calcNewLinePoints(newLineStart, newLineStart);
+    }
+    // else if (mode == DELETE) {
+    // newLineStart = e.getPoint();
+    // }
+  }
 
-			model.addLine(currLine.get(0), currLine.get(1));
+  @Override
+  public void mouseReleased(MouseEvent e)
+  {
+    if (mode == ADD)
+    {
+      drawing = false;
+      newLineEnd = e.getPoint();
+      calcNewLinePoints(newLineStart, newLineEnd);
 
-			paint(getGraphics());
-		} 
-//		else if (mode == DELETE) {
-//			newLineEnd = e.getPoint();
-//			if ((newLineStart.getX() == newLineEnd.getX()) && (newLineStart.getY() == newLineEnd.getY())) {
-//				model.removeLine(model.getClosest(new double[] { newLineEnd.getX(), newLineEnd.getY() }));
-//			}
-//		}
+      model.addLine(currLine.get(0), currLine.get(1));
 
-	}
+      paint(getGraphics());
+    }
+    // else if (mode == DELETE) {
+    // newLineEnd = e.getPoint();
+    // if ((newLineStart.getX() == newLineEnd.getX()) && (newLineStart.getY() == newLineEnd.getY()))
+    // {
+    // model.removeLine(model.getClosest(new double[] { newLineEnd.getX(), newLineEnd.getY() }));
+    // }
+    // }
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
+  }
 
-	}
+  @Override
+  public void mouseEntered(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
 
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
+  }
 
-	}
+  @Override
+  public void mouseExited(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		if (mode == ADD) {
-			newLineEnd = e.getPoint();
-			calcNewLinePoints(newLineStart, newLineEnd);
+  }
 
-			paint(getGraphics());
-		} else if (mode == DELETE) {
+  @Override
+  public void mouseDragged(MouseEvent e)
+  {
+    if (mode == ADD)
+    {
+      newLineEnd = e.getPoint();
+      calcNewLinePoints(newLineStart, newLineEnd);
 
-		}
+      paint(getGraphics());
+    }
+    else if (mode == DELETE)
+    {
 
-	}
+    }
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+  }
 
-	}
+  @Override
+  public void mouseMoved(MouseEvent e)
+  {
+    // TODO Auto-generated method stub
+
+  }
 
 }
