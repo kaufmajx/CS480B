@@ -26,94 +26,26 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 	private int mode;
 
 	private Point newLineStart;
-	private Point newMidStartPoint;
 	private Point newLineEnd;
-	private List<Line2D> currDrawingLines;
+	private ArrayList<double[]> currLine;
+
 	private boolean drawing;
 
 	public DigitizerPanel(BufferedImage ortho) {
 		this.ortho = ortho;
 		this.model = new DisplayDigitizerDocument(this);
-		addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-				if (mode == ADD) {
-					newLineStart = e.getPoint();
-				} else if (mode == DELETE) {
-					model.removeLine(model.getClosest(new double[] {e.getPoint().getX(), e.getPoint().getY()}));
-				}
-
-				model.addLine(new double[] { 3, 3 }, new double[] { 8, 5 });
-				paint(getGraphics());
-
-			}
-
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			public void mouseExited(MouseEvent e) {
-
-			}
-
-			public void mousePressed(MouseEvent e) {
-				if (mode == ADD) {
-					newLineStart = e.getPoint();
-					newMidStartPoint = newLineStart;
-					drawing = true;
-					currDrawingLines = new ArrayList<>();
-				} else if (mode == DELETE) {
-					newLineStart = e.getPoint();
-				}
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				if (mode == ADD) {
-					drawing = false;
-					newLineEnd = e.getPoint();
-					calcNewLinePoints(newMidStartPoint, newLineEnd);
-
-					for (Line2D line : currDrawingLines) {
-						double[] d1 = new double[] { line.getP1().getX(), line.getP1().getY() };
-						double[] d2 = new double[] { line.getP2().getX(), line.getP2().getY() };
-						model.addLine(d1, d2);
-					}
-					paint(getGraphics());
-				} else if (mode == DELETE)
-				{
-					newLineEnd = e.getPoint();
-					if ((newLineStart.getX() == newLineEnd.getX()) && (newLineStart.getY() == newLineEnd.getY())) {
-						model.removeLine(model.getClosest(new double[] {newLineEnd.getX(), newLineEnd.getY()}));
-					}
-				}
-			}
-
-		});
-
-		addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				if (mode == ADD) {
-					newLineEnd = e.getPoint();
-					calcNewLinePoints(newMidStartPoint, newLineEnd);
-					newMidStartPoint = newLineEnd;
-
-					paint(getGraphics());
-				} else if (mode == DELETE) {
-
-				}
-			}
-		});
+		
+		addMouseListener(this);
+		addMouseMotionListener(this);
 	}
 
 	private void calcNewLinePoints(Point p1, Point p2) {
-		if (newLineStart != null && newLineEnd != null) {
+		currLine = new ArrayList<>();
+		if (p1 != null && p2 != null) {
 			double[] d1 = new double[] { p1.getX(), p1.getY() };
 			double[] d2 = new double[] { p2.getX(), p2.getY() };
-			currDrawingLines.add(new Line2D.Double(d1[0], d1[1], d2[0], d2[1]));
+			currLine.add(d1);
+			currLine.add(d2);
 		}
 	}
 
@@ -139,15 +71,14 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
 		// add line currently being drawn
 		if (drawing) {
-			for (Line2D line : currDrawingLines) {
-				g2.setPaint(Color.YELLOW);
-				g2.draw(line);
-			}
-		} else {
-			for (Line2D line : model.getLines()) {
-				g2.setPaint(Color.GREEN);
-				g2.draw(line);
-			}
+
+			g2.setPaint(Color.YELLOW);
+			g2.draw(new Line2D.Double(currLine.get(0)[0], currLine.get(0)[1], currLine.get(1)[0], currLine.get(1)[1]));
+
+		}
+		for (Line2D line : model.getLines()) {
+			g2.setPaint(Color.GREEN);
+			g2.draw(line);
 		}
 
 	}
@@ -158,18 +89,44 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
+		if (mode == ADD) {
+			newLineStart = e.getPoint();
+		} else if (mode == DELETE) {
+			model.removeLine(model.getClosest(new double[] { e.getPoint().getX(), e.getPoint().getY() }));
+		}
+		model.addLine(new double[] { 3, 3 }, new double[] { 8, 5 });
+		paint(getGraphics());
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-//		model.addLine(new double[] { 3, 3 }, new double[] { 8, 5 });
-//		paint(getGraphics());
+		if (mode == ADD) {
+			newLineStart = e.getPoint();
+			drawing = true;
+			calcNewLinePoints(newLineStart, newLineStart);
+		} 
+//		else if (mode == DELETE) {
+//			newLineStart = e.getPoint();
+//		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if (mode == ADD) {
+			drawing = false;
+			newLineEnd = e.getPoint();
+			calcNewLinePoints(newLineStart, newLineEnd);
+
+			model.addLine(currLine.get(0), currLine.get(1));
+
+			paint(getGraphics());
+		} 
+//		else if (mode == DELETE) {
+//			newLineEnd = e.getPoint();
+//			if ((newLineStart.getX() == newLineEnd.getX()) && (newLineStart.getY() == newLineEnd.getY())) {
+//				model.removeLine(model.getClosest(new double[] { newLineEnd.getX(), newLineEnd.getY() }));
+//			}
+//		}
 
 	}
 
@@ -187,7 +144,14 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if (mode == ADD) {
+			newLineEnd = e.getPoint();
+			calcNewLinePoints(newLineStart, newLineEnd);
+
+			paint(getGraphics());
+		} else if (mode == DELETE) {
+
+		}
 
 	}
 

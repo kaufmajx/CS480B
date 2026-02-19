@@ -25,13 +25,12 @@ public class DisplayDigitizerDocument implements DigitizerDocument {
 		Line2D closestLine = null;
 		double closestDistance = Double.POSITIVE_INFINITY;
 		for (Line2D line : getLines()) {
-			double[] points = {line.getX1(), line.getX2(), line.getY1(), line.getY2()}; 
-			math.Vector.norm(points);
 			
 			double dist1 = Math.sqrt(Math.pow((point[0] - line.getX1()), 2) + Math.pow((point[1] - line.getY1()), 2));
 			double dist2 = Math.sqrt(Math.pow((point[0] - line.getX2()), 2) + Math.pow((point[1] - line.getY2()), 2));
 			if ((dist1 + dist2) < closestDistance) {
 				closestLine = line;
+				closestDistance = dist1 + dist2;
 			}
 		}
 		return closestLine;
