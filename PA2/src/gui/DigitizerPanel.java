@@ -40,11 +40,9 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 					newLineStart = e.getPoint();
 				} else if (mode == DELETE) {
 					model.removeLine(model.getClosest(new double[] {e.getPoint().getX(), e.getPoint().getY()}));
-
 				}
 
 				model.addLine(new double[] { 3, 3 }, new double[] { 8, 5 });
-				System.out.print("test");
 				paint(getGraphics());
 
 			}
@@ -78,9 +76,9 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 						double[] d2 = new double[] { line.getP2().getX(), line.getP2().getY() };
 						model.addLine(d1, d2);
 					}
-
 					paint(getGraphics());
-				} else if (mode == DELETE) {
+				} else if (mode == DELETE)
+				{
 					newLineEnd = e.getPoint();
 					if ((newLineStart.getX() == newLineEnd.getX()) && (newLineStart.getY() == newLineEnd.getY())) {
 						model.removeLine(model.getClosest(new double[] {newLineEnd.getX(), newLineEnd.getY()}));
@@ -166,7 +164,6 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 	@Override
 	public void mousePressed(MouseEvent e) {
 //		model.addLine(new double[] { 3, 3 }, new double[] { 8, 5 });
-//		System.out.print("test");
 //		paint(getGraphics());
 	}
 
