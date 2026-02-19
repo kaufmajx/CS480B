@@ -14,7 +14,7 @@ public class Vector
    * @param w
    * @return dot product
    */
-  public static double dot(double[] v, double[] w)
+  public static double dot(final double[] v, final double[] w)
   {
     return v[1] * v[2] + w[1] * w[2];
   }
@@ -26,7 +26,7 @@ public class Vector
    * @param w
    * @return
    */
-  public static double[] minus(double[] v, double[] w)
+  public static double[] minus(final double[] v, final double[] w)
   {
     return new double[] {v[0] - v[1], w[0] - w[1]};
   }
@@ -38,7 +38,7 @@ public class Vector
    * @param v
    * @return norm vector
    */
-  public static double norm(double[] v)
+  public static double norm(final double[] v)
   {
     return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
   }
@@ -49,7 +49,7 @@ public class Vector
    * @param v
    * @return normalized vector
    */
-  public static double[] normalize(double[] v)
+  public static double[] normalize(final double[] v)
   {
     double n = norm(v);
     return new double[] {v[0] / n, v[1] / n};
@@ -63,7 +63,7 @@ public class Vector
    * @param v
    * @return perpendicular vector
    */
-  public static double[] perp(double[] v)
+  public static double[] perp(final double[] v)
   {
     return new double[] {-v[1], v[0]};
   }
@@ -75,7 +75,7 @@ public class Vector
    * @param w
    * @return added vectors
    */
-  public static double[] plus(double[] v, double[] w)
+  public static double[] plus(final double[] v, final double[] w)
   {
     return new double[] {v[0] + w[0], v[1] + w[1]};
 
@@ -88,7 +88,7 @@ public class Vector
    * @param s
    * @return scalar s * w
    */
-  public static double[] times(double s, double[] w)
+  public static double[] times(final double s, final double[] w)
   {
     return new double[] {s * w[0], s * w[1]};
   }
@@ -100,7 +100,7 @@ public class Vector
    * @param s
    * @return scalar s * v
    */
-  public static double[] times(double[] v, double s)
+  public static double[] times(final double[] v, final double s)
   {
     return new double[] {v[0] * s, v[1] * s};
   }

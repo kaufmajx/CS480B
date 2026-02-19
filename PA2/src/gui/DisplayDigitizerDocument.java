@@ -8,27 +8,27 @@ public class DisplayDigitizerDocument implements DigitizerDocument
 {
 
   protected DigitizerPanel panel;
-  protected List<Line2D> lines;
+  protected List<Line2D.Double> lines;
 
-  public DisplayDigitizerDocument(DigitizerPanel panel)
+  public DisplayDigitizerDocument(final DigitizerPanel panel)
   {
     this.panel = panel;
     lines = new ArrayList<>();
   }
 
   @Override
-  public void addLine(double[] start, double[] stop)
+  public void addLine(final double[] start, final double[] stop)
   {
     Line2D.Double newLine = new Line2D.Double(start[0], start[1], stop[0], stop[1]);
     lines.add(newLine);
   }
 
   @Override
-  public Line2D getClosest(double[] point)
+  public Line2D.Double getClosest(final double[] point)
   {
-    Line2D closestLine = null;
+    Line2D.Double closestLine = null;
     double closestDistance = Double.POSITIVE_INFINITY;
-    for (Line2D line : getLines())
+    for (Line2D.Double line : getLines())
     {
 
       double dist1 = Math
@@ -45,13 +45,13 @@ public class DisplayDigitizerDocument implements DigitizerDocument
   }
 
   @Override
-  public List<Line2D> getLines()
+  public List<Line2D.Double> getLines()
   {
     return this.lines;
   }
 
   @Override
-  public void removeLine(Line2D line)
+  public void removeLine(final Line2D.Double line)
   {
     this.lines.remove(line);
   }

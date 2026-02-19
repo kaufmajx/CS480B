@@ -32,7 +32,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
   private boolean drawing;
 
-  public DigitizerPanel(BufferedImage ortho)
+  public DigitizerPanel(final BufferedImage ortho)
   {
     this.ortho = ortho;
     this.model = new DisplayDigitizerDocument(this);
@@ -41,7 +41,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
     addMouseMotionListener(this);
   }
 
-  private void calcNewLinePoints(Point p1, Point p2)
+  private void calcNewLinePoints(final Point p1, final Point p2)
   {
     currLine = new ArrayList<>();
     if (p1 != null && p2 != null)
@@ -58,12 +58,12 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
     return model;
   }
 
-  public List<Line2D> getLines()
+  public List<Line2D.Double> getLines()
   {
     return this.model.getLines();
   }
 
-  public void paint(Graphics g)
+  public void paint(final Graphics g)
   {
     Graphics2D g2 = (Graphics2D) g;
 
@@ -93,13 +93,13 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
   }
 
-  public void setMode(int mode)
+  public void setMode(final int mode)
   {
     this.mode = mode;
   }
 
   @Override
-  public void mouseClicked(MouseEvent e)
+  public void mouseClicked(final MouseEvent e)
   {
     if (mode == ADD)
     {
@@ -114,7 +114,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
   }
 
   @Override
-  public void mousePressed(MouseEvent e)
+  public void mousePressed(final MouseEvent e)
   {
     if (mode == ADD)
     {
@@ -128,7 +128,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
   }
 
   @Override
-  public void mouseReleased(MouseEvent e)
+  public void mouseReleased(final MouseEvent e)
   {
     if (mode == ADD)
     {
@@ -151,21 +151,21 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
   }
 
   @Override
-  public void mouseEntered(MouseEvent e)
+  public void mouseEntered(final MouseEvent e)
   {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void mouseExited(MouseEvent e)
+  public void mouseExited(final MouseEvent e)
   {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void mouseDragged(MouseEvent e)
+  public void mouseDragged(final MouseEvent e)
   {
     if (mode == ADD)
     {
@@ -182,7 +182,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
   }
 
   @Override
-  public void mouseMoved(MouseEvent e)
+  public void mouseMoved(final MouseEvent e)
   {
     // TODO Auto-generated method stub
 

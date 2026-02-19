@@ -6,12 +6,12 @@ import java.util.List;
 public interface DigitizerDocument
 {
 
-  public void addLine(double[] start, double[] stop);
+  public void addLine(final double[] start, final double[] stop);
 
-  public Line2D getClosest(double[] point);
+  public Line2D.Double getClosest(final double[] point);
 
-  public List<Line2D> getLines();
+  public List<Line2D.Double> getLines();
 
-  public void removeLine(Line2D line);
+  public void removeLine(final Line2D.Double line);
 
 }
