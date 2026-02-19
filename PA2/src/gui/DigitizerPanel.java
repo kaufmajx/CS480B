@@ -56,13 +56,12 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
   private void calcNewLinePoints(final Point p1, final Point p2)
   {
     currLine = new ArrayList<>();
-    if (p1 != null && p2 != null)
-    {
-      double[] d1 = new double[] {p1.getX(), p1.getY()};
-      double[] d2 = new double[] {p2.getX(), p2.getY()};
-      currLine.add(d1);
-      currLine.add(d2);
-    }
+
+    double[] d1 = new double[] {p1.getX(), p1.getY()};
+    double[] d2 = new double[] {p2.getX(), p2.getY()};
+    currLine.add(d1);
+    currLine.add(d2);
+
   }
 
   /**
@@ -137,11 +136,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
   @Override
   public void mouseClicked(final MouseEvent e)
   {
-    if (mode == ADD)
-    {
-      newLineStart = e.getPoint();
-    }
-    else if (mode == DELETE)
+    if (mode == DELETE)
     {
       model.removeLine(model.getClosest(new double[] {e.getPoint().getX(), e.getPoint().getY()}));
     }
@@ -169,8 +164,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
       calcNewLinePoints(newLineStart, newLineEnd);
 
       model.addLine(currLine.get(0), currLine.get(1));
-
-      paint(getGraphics());
+      repaint();
     }
   }
 
@@ -195,8 +189,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
     {
       newLineEnd = e.getPoint();
       calcNewLinePoints(newLineStart, newLineEnd);
-
-      paint(getGraphics());
+      repaint();
     }
 
   }

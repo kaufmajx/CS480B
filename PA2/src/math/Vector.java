@@ -22,7 +22,7 @@ public class Vector
    */
   public static double dot(final double[] v, final double[] w)
   {
-    return v[0] * v[1] + w[0] * w[0];
+    return v[0] * w[0] + v[1] * w[1];
   }
 
   /**
@@ -34,7 +34,7 @@ public class Vector
    */
   public static double[] minus(final double[] v, final double[] w)
   {
-    return new double[] {v[0] - v[1], w[0] - w[1]};
+    return new double[] {v[0] - w[0], v[1] - w[1]};
   }
 
   /**
