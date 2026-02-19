@@ -1,14 +1,15 @@
 package testing;
 
-import gui.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.nio.file.FileSystemLoopException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.swing.text.BadLocationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import gui.CompletingDocument;
+import gui.CompletingField;
 
 class CompletingDocumentTest
 {

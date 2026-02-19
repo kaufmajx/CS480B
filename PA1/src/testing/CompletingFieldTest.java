@@ -1,13 +1,12 @@
 package testing;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.swing.text.Document;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import gui.CompletingDocument;
 import gui.CompletingField;
 
 class CompletingFieldTest

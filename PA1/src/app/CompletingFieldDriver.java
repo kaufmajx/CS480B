@@ -1,10 +1,8 @@
 package app;
 
-import gui.*;
-import text.WordFinder;
-
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.*;
+
+import javax.swing.SwingUtilities;
 
 /**
  * A driver that can be used to test the CompletingField and CompletingDocument classes.
