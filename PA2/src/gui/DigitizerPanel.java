@@ -15,12 +15,18 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+/**
+ * DigitizerPanel.
+ *
+ * @author Tenley Kennett & Jelal Kaufman
+ * @version 2/19
+ */
 public class DigitizerPanel extends JPanel implements MouseMotionListener, MouseListener
 {
 
-  private static final long serialVersionUID = 1L;
   public static final int ADD = 0;
   public static final int DELETE = 1;
+  private static final long serialVersionUID = 1L;
 
   private BufferedImage ortho;
   private DigitizerDocument model;
@@ -32,11 +38,17 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
   private boolean drawing;
 
+  /**
+   * Constructs a {@code DigitizerPanel} with the given orthophoto as the background image.
+   * Initializes the document model and registers mouse listeners.
+   *
+   * @param ortho
+   *          the {@link BufferedImage} to display as the background; must not be {@code null}
+   */
   public DigitizerPanel(final BufferedImage ortho)
   {
     this.ortho = ortho;
-    this.model = new DisplayDigitizerDocument(this);
-
+    this.model = createDefaultModel();
     addMouseListener(this);
     addMouseMotionListener(this);
   }
@@ -53,16 +65,34 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
     }
   }
 
-  public DigitizerDocument createDefaultMode()
+  /**
+   * Returns the underlying {@link DigitizerDocument} model used by this panel.
+   *
+   * @return the default {@link DigitizerDocument} instance
+   */
+  public DigitizerDocument createDefaultModel()
   {
-    return model;
+    return new DisplayDigitizerDocument(this);
   }
 
+  /**
+   * Returns all line segments currently stored in the document model.
+   *
+   * @return a {@link List} of {@link Line2D.Double} objects
+   */
   public List<Line2D.Double> getLines()
   {
     return this.model.getLines();
   }
 
+  /**
+   * Paints the panel by drawing the background orthophoto, any completed line segments (in green),
+   * and the line currently being drawn if a drag is in progress (in yellow).
+   *
+   * @param g
+   *          the {@link Graphics} context to paint on
+   */
+  @Override
   public void paint(final Graphics g)
   {
     Graphics2D g2 = (Graphics2D) g;
@@ -71,7 +101,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
     super.paint(g2);
 
     // draw photo
-    g2.drawImage(ortho, null, ADD, ADD);
+    g2.drawImage(ortho, null, 0, 0);
 
     // add lines
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -93,6 +123,12 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
   }
 
+  /**
+   * Sets the interaction mode of this panel.
+   *
+   * @param mode
+   *          either {@link #ADD} or {@link #DELETE}
+   */
   public void setMode(final int mode)
   {
     this.mode = mode;
@@ -109,8 +145,7 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
     {
       model.removeLine(model.getClosest(new double[] {e.getPoint().getX(), e.getPoint().getY()}));
     }
-    model.addLine(new double[] {3, 3}, new double[] {8, 5});
-    paint(getGraphics());
+    repaint();
   }
 
   @Override
@@ -122,9 +157,6 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
       drawing = true;
       calcNewLinePoints(newLineStart, newLineStart);
     }
-    // else if (mode == DELETE) {
-    // newLineStart = e.getPoint();
-    // }
   }
 
   @Override
@@ -140,14 +172,6 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
       paint(getGraphics());
     }
-    // else if (mode == DELETE) {
-    // newLineEnd = e.getPoint();
-    // if ((newLineStart.getX() == newLineEnd.getX()) && (newLineStart.getY() == newLineEnd.getY()))
-    // {
-    // model.removeLine(model.getClosest(new double[] { newLineEnd.getX(), newLineEnd.getY() }));
-    // }
-    // }
-
   }
 
   @Override
@@ -174,17 +198,12 @@ public class DigitizerPanel extends JPanel implements MouseMotionListener, Mouse
 
       paint(getGraphics());
     }
-    else if (mode == DELETE)
-    {
-
-    }
 
   }
 
   @Override
   public void mouseMoved(final MouseEvent e)
   {
-    // TODO Auto-generated method stub
 
   }
 

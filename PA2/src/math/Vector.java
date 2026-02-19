@@ -1,5 +1,11 @@
 package math;
 
+/**
+ * Vector.
+ *
+ * @author Tenley Kennett & Jelal Kaufman
+ * @version 2/19
+ */
 public class Vector
 {
 
@@ -8,7 +14,7 @@ public class Vector
   }
 
   /**
-   * Dot product of 2 vectors. p⋅q = p1q1+p2q2
+   * Dot product of 2 vectors. p⋅q = p1q1+p2q2.
    * 
    * @param v
    * @param w
@@ -16,15 +22,15 @@ public class Vector
    */
   public static double dot(final double[] v, final double[] w)
   {
-    return v[1] * v[2] + w[1] * w[2];
+    return v[0] * v[1] + w[0] * w[0];
   }
 
   /**
-   * Subtract 2 vectors. q−r=(q1−r1,q2−r2)
+   * Subtract 2 vectors. q−r=(q1−r1,q2−r2).
    * 
    * @param v
    * @param w
-   * @return
+   * @return vector 1 subtracted by vector 2
    */
   public static double[] minus(final double[] v, final double[] w)
   {
@@ -33,7 +39,7 @@ public class Vector
 
   /**
    * Returns the Euclidean norm (magnitude) of v "square root of the sum of the squares of the
-   * elements"
+   * elements".
    * 
    * @param v
    * @return norm vector
@@ -44,7 +50,7 @@ public class Vector
   }
 
   /**
-   * Returns then normalized vector (the vector divided by its norm)
+   * Returns then normalized vector (the vector divided by its norm).
    * 
    * @param v
    * @return normalized vector
@@ -56,7 +62,7 @@ public class Vector
   }
 
   /**
-   * Returns the vector perpendicular to v (rotated 90° counter-clockwise)
+   * Returns the vector perpendicular to v (rotated 90° counter-clockwise).
    * 
    * q perpendicular = (-q2, q1)
    * 
@@ -82,7 +88,7 @@ public class Vector
   }
 
   /**
-   * Returns the scalar s * w vector = (w1 * s, w2 * s)
+   * Returns the scalar s * w vector = (w1 * s, w2 * s).
    * 
    * @param w
    * @param s
