@@ -4,6 +4,8 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import math.Vector;
+
 /**
  * DisplayDigitizerDocument.
  *
@@ -57,15 +59,13 @@ public class DisplayDigitizerDocument implements DigitizerDocument
     double closestDistance = Double.POSITIVE_INFINITY;
     for (Line2D.Double line : getLines())
     {
+      double[] v = {line.getX1() - point[0], line.getY1() - point[1]};
+      double dist = Vector.norm(v);
 
-      double dist1 = Math
-          .sqrt(Math.pow((point[0] - line.getX1()), 2) + Math.pow((point[1] - line.getY1()), 2));
-      double dist2 = Math
-          .sqrt(Math.pow((point[0] - line.getX2()), 2) + Math.pow((point[1] - line.getY2()), 2));
-      if ((dist1 + dist2) < closestDistance)
+      if ((dist) < closestDistance)
       {
         closestLine = line;
-        closestDistance = dist1 + dist2;
+        closestDistance = dist;
       }
     }
     return closestLine;

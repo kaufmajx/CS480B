@@ -46,7 +46,7 @@ public class Vector
    */
   public static double norm(final double[] v)
   {
-    return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
+    return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2));
   }
 
   /**
