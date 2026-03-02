@@ -10,7 +10,7 @@ public class PieceWiseLinearCurve extends AbstractGeographicShape
   public PieceWiseLinearCurve(String id)
   {
     super(id);
-
+    shape = new Path2D.Double();
   }
 
   public PieceWiseLinearCurve(String id, Path2D.Double shape)
@@ -21,12 +21,12 @@ public class PieceWiseLinearCurve extends AbstractGeographicShape
 
   public void add(double[] point)
   {
-
+    shape.moveTo(point[0], point[1]);
   }
 
   public void append(Shape addition, boolean connect)
   {
-
+    this.shape.append(addition, connect);
   }
 
   @Override

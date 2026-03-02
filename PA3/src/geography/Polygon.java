@@ -18,7 +18,6 @@ public class Polygon extends PieceWiseLinearCurve
 
   public Shape getShape()
   {
-    // TODO close polygon before returning
     return super.getShape();
   }
 }

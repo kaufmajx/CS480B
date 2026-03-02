@@ -41,6 +41,6 @@ public class CartographyDocument<T> implements Iterable<T>
 
   public void setHighlighted(Map<String, T> highlighted)
   {
-
+    
   }
 }
