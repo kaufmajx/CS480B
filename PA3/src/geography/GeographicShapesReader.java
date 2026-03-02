@@ -32,7 +32,7 @@ public class GeographicShapesReader
   public CartographyDocument<GeographicShape> read()
   {
     String line;
-    CartographyDocument cd = new CartographyDocument<GeographicShape>(null, null);
+    CartographyDocument cd;
     Map<String, GeographicShape> elements = new HashMap<>();
 
     try
@@ -71,7 +71,7 @@ public class GeographicShapesReader
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
+    cd = new CartographyDocument<>(elements, null);
     return cd;
 
   }

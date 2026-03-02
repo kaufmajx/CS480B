@@ -14,6 +14,7 @@ public class CartographyDocument<T> implements Iterable<T>
   public CartographyDocument(Map<String, T> elements, Rectangle2D.Double bounds)
   {
     this.elements = elements;
+    this.bounds = bounds;
   }
 
   public Rectangle2D.Double getBounds()
