@@ -28,19 +28,18 @@ public class CartographyDocument<T> implements Iterable<T>
 
   public Iterator<T> highlighted()
   {
-    return null;
+    return highlight.values().iterator();
 
   }
 
   @Override
   public Iterator<T> iterator()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return elements.values().iterator();
   }
 
   public void setHighlighted(Map<String, T> highlighted)
   {
-    
+    this.highlight = highlighted;
   }
 }
