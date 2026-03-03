@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.util.Iterator;
 import geography.GeographicShape;
 
-public class GeographicShapeCartographer<GeographicShape> implements Cartographer<GeographicShape>
+public class GeographicShapeCartographer<T> implements Cartographer<GeographicShape>
 
 {
   private Color color;
@@ -31,7 +31,7 @@ public class GeographicShapeCartographer<GeographicShape> implements Cartographe
     AffineTransform old = g2.getTransform();
     g2.transform(af);
     g2.setColor(color);
-    
+
     Iterator<GeographicShape> shapes = model.iterator();
     while (shapes.hasNext())
     {
