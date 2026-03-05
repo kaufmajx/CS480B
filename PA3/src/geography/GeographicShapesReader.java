@@ -1,5 +1,7 @@
 package geography;
 
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,48 +33,55 @@ public class GeographicShapesReader
 
   public CartographyDocument<GeographicShape> read()
   {
-    String line;
-    CartographyDocument cd;
     Map<String, GeographicShape> elements = new HashMap<>();
+
+    double minX = Double.MAX_VALUE;
+    double minY = Double.MAX_VALUE;
+    double maxX = -Double.MAX_VALUE;
+    double maxY = -Double.MAX_VALUE;
 
     try
     {
+      String line;
+
       while ((line = in.readLine()) != null)
       {
-        // System.out.println("Outer while loop");
+        line = line.trim();
 
-        line = line.trim().replace("\n", "");
         String[] shapeInfo = line.split("\t");
 
-        // System.out.println("shapeInfo: " + shapeInfo[0]);
-
-        if (shapeInfo[0].equals("Type:"))
+        if (shapeInfo.length >= 4 && shapeInfo[0].equals("Type:") && shapeInfo[1].equals("Polygon"))
         {
-          // System.out.println("First if: " + shapeInfo[0]);
-          if (shapeInfo[1].equals("Polygon"))
+
+          String id = shapeInfo[3];
+          PieceWiseLinearCurve newPoly = new Polygon(id);
+
+          while ((line = in.readLine()) != null && !line.equals("END"))
           {
-            // System.out.println(2"Second ifif: " + shapeInfo[1]);
-            PieceWiseLinearCurve newPoly = new Polygon(shapeInfo[2]);
-            while (!(line = in.readLine()).equals("END"))
-            {
-              String[] points = line.split("\t");
-              double[] linePoint = new double[] {Double.parseDouble(points[0]),
-                  Double.parseDouble(points[1])};
-              newPoly.add(linePoint);
-              System.out.println(points[0]);
-            }
-            elements.put(shapeInfo[1], newPoly);
+            String[] points = line.split("\t");
+
+            double[] projected = proj.forward(
+                new double[] {Double.parseDouble(points[0]), Double.parseDouble(points[1])});
+
+            newPoly.add(projected);
+
+            minX = Math.min(minX, projected[0]);
+            minY = Math.min(minY, projected[1]);
+            maxX = Math.max(maxX, projected[0]);
+            maxY = Math.max(maxY, projected[1]);
           }
+
+          elements.put(id, newPoly);
         }
       }
     }
     catch (IOException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    cd = new CartographyDocument<>(elements, null);
-    return cd;
 
+    Rectangle2D.Double bounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
+
+    return new CartographyDocument<>(elements, bounds);
   }
 }

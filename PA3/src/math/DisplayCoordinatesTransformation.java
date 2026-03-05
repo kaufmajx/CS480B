@@ -21,10 +21,20 @@ public class DisplayCoordinatesTransformation implements ViewTransformation
   }
 
   @Override
-  public AffineTransform getTransform(Rectangle2D displyBounds, Rectangle2D contentBounds)
+  public AffineTransform getTransform(Rectangle2D displayBounds, Rectangle2D contentBounds)
   {
-    // TODO Auto-generated method stub
-    return null;
+    double scaleX = displayBounds.getWidth() / contentBounds.getWidth();
+    double scaleY = displayBounds.getHeight() / contentBounds.getHeight();
+
+    double scale = Math.min(scaleX, scaleY);
+
+    AffineTransform at = new AffineTransform();
+
+    at.translate(displayBounds.getX(), displayBounds.getY());
+    at.scale(scale, -scale);
+    at.translate(-contentBounds.getMinX(), -contentBounds.getMaxY());
+
+    return at;
   }
 
 }

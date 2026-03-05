@@ -22,6 +22,7 @@ public class PieceWiseLinearCurve extends AbstractGeographicShape
   public void add(double[] point)
   {
     shape.moveTo(point[0], point[1]);
+    shape.lineTo(point[0], point[1]);
   }
 
   public void append(Shape addition, boolean connect)

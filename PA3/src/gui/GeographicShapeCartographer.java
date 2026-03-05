@@ -2,8 +2,10 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.Iterator;
+
 import geography.GeographicShape;
 
 public class GeographicShapeCartographer<T> implements Cartographer<GeographicShape>
@@ -32,12 +34,13 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
     g2.transform(af);
     g2.setColor(color);
 
-    Iterator<GeographicShape> shapes = model.iterator();
-    while (shapes.hasNext())
-    {
-      g2.draw(shapes.next().getShape());
-    }
 
+    for (GeographicShape t : model)
+    {
+      g2.draw(t.getShape());
+      System.out.print("Shape drawn: " + t.getID());
+    }
+    
     g2.setTransform(old);
   }
 
