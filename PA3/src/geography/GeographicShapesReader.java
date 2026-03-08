@@ -82,6 +82,6 @@ public class GeographicShapesReader
 
     Rectangle2D.Double bounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
 
-    return new CartographyDocument<>(elements, bounds);
-  }
+	return new CartographyDocument<>(elements, bounds);
+}
 }

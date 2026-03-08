@@ -26,10 +26,14 @@ public class PA3App implements ActionListener, Runnable
       if (retval == JFileChooser.APPROVE_OPTION) 
       {
         String name = fileChooser.getSelectedFile().getName();
+        System.out.println("Selected file: " + name);
         AbstractMapProjection proj;
         if (name.indexOf("world") >= 0) proj = new SinusoidalProjection();
-        else proj = new ConicalEqualAreaProjection(-96.0, 37.5, 29.5, 45.5);
-        proj = new SinusoidalProjection();
+        else {
+        	proj = new ConicalEqualAreaProjection(-96.0, 37.5, 29.5, 45.5);
+        	System.out.println("Doing ConicalEqualAreaProjection");
+        }
+//        proj = new SinusoidalProjection();
         try
         {
           FileInputStream in = new FileInputStream(name);

@@ -38,7 +38,7 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
     for (GeographicShape t : model)
     {
       g2.draw(t.getShape());
-      System.out.print("Shape drawn: " + t.getID());
+//      System.out.print("Shape drawn: " + t.getID());
     }
     
     g2.setTransform(old);
