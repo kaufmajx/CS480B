@@ -8,6 +8,5 @@ public interface Cartographer<T>
   public abstract void paintHighlights(CartographyDocument<T> model, Graphics2D g2,
       AffineTransform af);
 
-  public abstract void paintShapes(CartographyDocument<T> model, Graphics2D g2,
-      AffineTransform af);
+  public abstract void paintShapes(CartographyDocument<T> model, Graphics2D g2, AffineTransform af);
 }

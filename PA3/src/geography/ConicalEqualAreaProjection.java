@@ -10,11 +10,11 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
 
   public ConicalEqualAreaProjection(double refM, double refP, double refP1, double refP2)
   {
-	this.lambdaZero = Math.toRadians(refM);
-	double refPRadian  = Math.toRadians(refP);
+    this.lambdaZero = Math.toRadians(refM);
+    double refPRadian = Math.toRadians(refP);
     double refP1Radian = Math.toRadians(refP1);
     double refP2Radian = Math.toRadians(refP2);
-    
+
     this.n = 0.5 * (Math.sin(refP1Radian) + Math.sin(refP2Radian));
     this.c = Math.pow(Math.cos(refP1Radian), 2) + (2 * n * Math.sin(refP2Radian));
     this.p0 = Math.sqrt(this.c - (2 * this.n * Math.sin(refPRadian))) / this.n;

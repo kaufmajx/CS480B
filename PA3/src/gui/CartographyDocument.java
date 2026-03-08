@@ -30,9 +30,10 @@ public class CartographyDocument<T> implements Iterable<T>
 
   public Iterator<T> highlighted()
   {
-	if (highlight == null) {
-		return Collections.emptyIterator();
-	}
+    if (highlight == null)
+    {
+      return Collections.emptyIterator();
+    }
     return highlight.values().iterator();
 
   }

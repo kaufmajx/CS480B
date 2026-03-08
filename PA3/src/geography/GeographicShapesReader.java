@@ -58,9 +58,10 @@ public class GeographicShapesReader
 
           while ((line = in.readLine()) != null && !line.trim().equals("END"))
           {
-        	line = line.trim();
-        	if (line.isEmpty()) continue;
-        	
+            line = line.trim();
+            if (line.isEmpty())
+              continue;
+
             String[] points = line.split("\t");
 
             double[] projected = proj.forward(
@@ -85,6 +86,6 @@ public class GeographicShapesReader
 
     Rectangle2D.Double bounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
 
-	return new CartographyDocument<>(elements, bounds);
-}
+    return new CartographyDocument<>(elements, bounds);
+  }
 }
