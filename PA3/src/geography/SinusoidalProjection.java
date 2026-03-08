@@ -1,11 +1,14 @@
 package geography;
 
+/**
+ * Implements the Sinusoidal map projection.
+ */
 public class SinusoidalProjection extends AbstractMapProjection
 {
   private static final double LAMBDA_ZERO = 0.0;
 
   @Override
-  public double[] forward(double lambda, double phi)
+  public double[] forward(final double lambda, final double phi)
   {
     double[] val;
     double d1 = R * Math.cos(phi) * (lambda - LAMBDA_ZERO);
@@ -16,7 +19,7 @@ public class SinusoidalProjection extends AbstractMapProjection
   }
 
   @Override
-  public double[] inverse(double ew, double ns)
+  public double[] inverse(final double ew, final double ns)
   {
     double phi = ns / R;
     double[] val;

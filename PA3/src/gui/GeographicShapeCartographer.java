@@ -8,21 +8,33 @@ import java.util.Iterator;
 
 import geography.GeographicShape;
 
+/**
+ * A cartographer that paints geographic shapes onto a graphics context.
+ * 
+ * @param <T>
+ *          the type parameter for the cartographer
+ */
 public class GeographicShapeCartographer<T> implements Cartographer<GeographicShape>
 
 {
   private Color color;
 
-  public GeographicShapeCartographer(Color color)
+  /**
+   * Constructs a GeographicShapeCartographer with the given color.
+   * 
+   * @param color
+   *          the color used to draw shapes
+   */
+  public GeographicShapeCartographer(final Color color)
   {
     this.color = color;
   }
 
   @Override
-  public void paintHighlights(CartographyDocument<GeographicShape> model, Graphics2D g2,
+  public void paintHighlights(final CartographyDocument<GeographicShape> model, final Graphics2D g2,
       AffineTransform af)
   {
-    Color highlight = new Color(color.getRed(), color.getBlue(), color.getGreen());
+    Color highlight = new Color(255, 255, 0, 128); // semi-transparent yellow
     g2.setColor(highlight);
 
     Iterator<GeographicShape> it = model.highlighted();
@@ -36,7 +48,7 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
   }
 
   @Override
-  public void paintShapes(CartographyDocument<GeographicShape> model, Graphics2D g2,
+  public void paintShapes(final CartographyDocument<GeographicShape> model, final Graphics2D g2,
       AffineTransform af)
   {
     g2.setColor(color);

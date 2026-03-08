@@ -1,5 +1,8 @@
 package geography;
 
+/**
+ * Implements the Albers Conical Equal Area map projection.
+ */
 public class ConicalEqualAreaProjection extends AbstractMapProjection
 {
 
@@ -8,6 +11,19 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
   private double c;
   private double p0;
 
+  /**
+   * Constructs a ConicalEqualAreaProjection with the given reference meridian, parallel, and
+   * standard parallels.
+   * 
+   * @param refM
+   *          the reference meridian in degrees
+   * @param refP
+   *          the reference parallel in degrees
+   * @param refP1
+   *          the first standard parallel in degrees
+   * @param refP2
+   *          the second standard parallel in degrees
+   */
   public ConicalEqualAreaProjection(double refM, double refP, double refP1, double refP2)
   {
     this.lambdaZero = Math.toRadians(refM);

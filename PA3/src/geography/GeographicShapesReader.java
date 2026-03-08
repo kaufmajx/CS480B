@@ -12,12 +12,23 @@ import java.util.Map;
 
 import gui.CartographyDocument;
 
+/**
+ * Reads geographic shapes from an input stream and applies a map projection.
+ */
 public class GeographicShapesReader
 {
   private BufferedReader in;
   private MapProjection proj;
 
-  public GeographicShapesReader(InputStream is, MapProjection proj)
+  /**
+   * Constructs a GeographicShapesReader from the given input stream and projection.
+   * 
+   * @param is
+   *          the input stream to read from
+   * @param proj
+   *          the map projection to apply
+   */
+  public GeographicShapesReader(final InputStream is, final MapProjection proj)
   {
     this.proj = proj;
     try
@@ -31,6 +42,11 @@ public class GeographicShapesReader
 
   }
 
+  /**
+   * Reads and returns a CartographyDocument containing all parsed geographic shapes.
+   * 
+   * @return a CartographyDocument with the parsed shapes and bounds
+   */
   public CartographyDocument<GeographicShape> read()
   {
     Map<String, GeographicShape> elements = new HashMap<>();
