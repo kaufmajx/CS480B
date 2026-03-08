@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,6 +30,9 @@ public class CartographyDocument<T> implements Iterable<T>
 
   public Iterator<T> highlighted()
   {
+	if (highlight == null) {
+		return Collections.emptyIterator();
+	}
     return highlight.values().iterator();
 
   }

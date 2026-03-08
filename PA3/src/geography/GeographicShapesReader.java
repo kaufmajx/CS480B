@@ -56,8 +56,11 @@ public class GeographicShapesReader
           String id = shapeInfo[3];
           PieceWiseLinearCurve newPoly = new Polygon(id);
 
-          while ((line = in.readLine()) != null && !line.equals("END"))
+          while ((line = in.readLine()) != null && !line.trim().equals("END"))
           {
+        	line = line.trim();
+        	if (line.isEmpty()) continue;
+        	
             String[] points = line.split("\t");
 
             double[] projected = proj.forward(

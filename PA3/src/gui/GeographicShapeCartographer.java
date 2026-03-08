@@ -22,7 +22,16 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
   public void paintHighlights(CartographyDocument<GeographicShape> model, Graphics2D g2,
       AffineTransform af)
   {
-    // TODO Auto-generated method stub
+	Color highlight = new Color(color.getRed(), color.getBlue(), color.getGreen());
+	g2.setColor(highlight);
+	
+    Iterator<GeographicShape> it = model.highlighted();
+    while (it.hasNext()) {
+    	Shape transformed = af.createTransformedShape(it.next().getShape());
+    	g2.fill(transformed);  // fill to make highlights stand out
+    	g2.draw(transformed);
+    }
+    
 
   }
 
@@ -30,18 +39,19 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
   public void paintShapes(CartographyDocument<GeographicShape> model, Graphics2D g2,
       AffineTransform af)
   {
-    AffineTransform old = g2.getTransform();
-    g2.transform(af);
-    g2.setColor(color);
+	g2.setColor(color);
+//    AffineTransform old = g2.getTransform();
+//    g2.transform(af);
 
 
     for (GeographicShape t : model)
     {
-      g2.draw(t.getShape());
+      Shape transformed = af.createTransformedShape(t.getShape());
+      g2.draw(transformed);
 //      System.out.print("Shape drawn: " + t.getID());
     }
     
-    g2.setTransform(old);
+//    g2.setTransform(old);
   }
 
 }
