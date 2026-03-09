@@ -16,7 +16,7 @@ public abstract class AbstractGeographicShape implements GeographicShape
    * @param id
    *          the unique identifier for this shape
    */
-  public AbstractGeographicShape(String id)
+  public AbstractGeographicShape(final String id)
   {
     this.id = id;
   }

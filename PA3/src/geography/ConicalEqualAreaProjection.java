@@ -24,7 +24,8 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
    * @param refP2
    *          the second standard parallel in degrees
    */
-  public ConicalEqualAreaProjection(final double refM, final double refP, final double refP1, final double refP2)
+  public ConicalEqualAreaProjection(final double refM, final double refP, final double refP1,
+      final double refP2)
   {
     this.lambdaZero = Math.toRadians(refM);
     double refPRadian = Math.toRadians(refP);
@@ -38,7 +39,7 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
 
   @Override
   public double[] forward(final double lambda, final double phi)
-  { 
+  {
     double p = Math.sqrt(this.c - 2 * this.n * Math.sin(phi)) / this.n;
     double theta = this.n * (lambda - lambdaZero);
 

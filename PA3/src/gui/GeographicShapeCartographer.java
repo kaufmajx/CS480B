@@ -32,7 +32,7 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
 
   @Override
   public void paintHighlights(final CartographyDocument<GeographicShape> model, final Graphics2D g2,
-      AffineTransform af)
+      final AffineTransform af)
   {
     Color highlight = new Color(255, 255, 0, 128); // semi-transparent yellow
     g2.setColor(highlight);
@@ -49,7 +49,7 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
 
   @Override
   public void paintShapes(final CartographyDocument<GeographicShape> model, final Graphics2D g2,
-      AffineTransform af)
+      final AffineTransform af)
   {
     g2.setColor(color);
     // AffineTransform old = g2.getTransform();

@@ -34,5 +34,6 @@ public interface Cartographer<T>
    * @param af
    *          the affine transform to apply to shapes before painting
    */
-  public abstract void paintShapes(final CartographyDocument<T> model, final Graphics2D g2, final AffineTransform af);
+  public abstract void paintShapes(final CartographyDocument<T> model, final Graphics2D g2,
+      final AffineTransform af);
 }

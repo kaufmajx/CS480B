@@ -18,6 +18,8 @@ public class GeographicShapesReader
 {
   private BufferedReader in;
   private MapProjection proj;
+  private String tabChar = "\t";
+
 
   /**
    * Constructs a GeographicShapesReader from the given input stream and projection.
@@ -63,7 +65,7 @@ public class GeographicShapesReader
       {
         line = line.trim();
 
-        String[] shapeInfo = line.split("\t");
+        String[] shapeInfo = line.split(tabChar);
 
         if (shapeInfo.length >= 4 && shapeInfo[0].equals("Type:"))
         {
@@ -85,7 +87,7 @@ public class GeographicShapesReader
             if (line.isEmpty())
               continue;
 
-            String[] points = line.split("\t");
+            String[] points = line.split(tabChar);
 
             double[] projected = proj.forward(
                 new double[] {Double.parseDouble(points[0]), Double.parseDouble(points[1])});
