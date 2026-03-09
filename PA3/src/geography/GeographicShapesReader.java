@@ -66,11 +66,19 @@ public class GeographicShapesReader
 
         String[] shapeInfo = line.split("\t");
 
-        if (shapeInfo.length >= 4 && shapeInfo[0].equals("Type:") && shapeInfo[1].equals("Polygon"))
+        if (shapeInfo.length >= 4 && shapeInfo[0].equals("Type:"))
         {
-
           String id = shapeInfo[3];
-          PieceWiseLinearCurve newPoly = new Polygon(id);
+          PieceWiseLinearCurve newShape = null;
+
+          if (shapeInfo[1].equals("Polygon"))
+          {
+            newShape = new Polygon(id);
+          }
+          else if (shapeInfo[1].equals("PiecewiseLinearCurve"))
+          {
+            newShape = new PieceWiseLinearCurve(id);
+          }
 
           while ((line = in.readLine()) != null && !line.trim().equals("END"))
           {
@@ -83,7 +91,7 @@ public class GeographicShapesReader
             double[] projected = proj.forward(
                 new double[] {Double.parseDouble(points[0]), Double.parseDouble(points[1])});
 
-            newPoly.add(projected);
+            newShape.add(projected);
 
             minX = Math.min(minX, projected[0]);
             minY = Math.min(minY, projected[1]);
@@ -91,7 +99,7 @@ public class GeographicShapesReader
             maxY = Math.max(maxY, projected[1]);
           }
 
-          elements.put(id, newPoly);
+          elements.put(id, newShape);
         }
       }
     }
