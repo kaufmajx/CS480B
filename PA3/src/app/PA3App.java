@@ -1,14 +1,31 @@
 package app;
 
-import geography.*;
-import gui.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.print.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import geography.AbstractMapProjection;
+import geography.ConicalEqualAreaProjection;
+import geography.GeographicShape;
+import geography.GeographicShapesReader;
+import geography.SinusoidalProjection;
+import gui.CartographyDocument;
+import gui.CartographyPanel;
+import gui.GeographicShapeCartographer;
 
 public class PA3App implements ActionListener, Runnable
 {
@@ -23,17 +40,19 @@ public class PA3App implements ActionListener, Runnable
     if (ac.equals("Open"))
     {
       int retval = fileChooser.showOpenDialog(f);
-      if (retval == JFileChooser.APPROVE_OPTION) 
+      if (retval == JFileChooser.APPROVE_OPTION)
       {
         String name = fileChooser.getSelectedFile().getName();
         System.out.println("Selected file: " + name);
         AbstractMapProjection proj;
-        if (name.indexOf("world") >= 0) proj = new SinusoidalProjection();
-        else {
-        	proj = new ConicalEqualAreaProjection(-96.0, 37.5, 29.5, 45.5);
-        	System.out.println("Doing ConicalEqualAreaProjection");
+        if (name.indexOf("world") >= 0)
+          proj = new SinusoidalProjection();
+        else
+        {
+          proj = new ConicalEqualAreaProjection(-96.0, 37.5, 29.5, 45.5);
+          System.out.println("Doing ConicalEqualAreaProjection");
         }
-//        proj = new SinusoidalProjection();
+        // proj = new SinusoidalProjection();
         try
         {
           FileInputStream in = new FileInputStream(name);
@@ -43,21 +62,19 @@ public class PA3App implements ActionListener, Runnable
         }
         catch (FileNotFoundException fnfe)
         {
-          JOptionPane.showMessageDialog(f, 
-              "Unable to open file!",
-              "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(f, "Unable to open file!", "Error",
+              JOptionPane.ERROR_MESSAGE);
         }
       }
     }
-    
+
     if (ac.equals("Exit"))
     {
       f.dispose();
       System.exit(0);
     }
   }
-  
-  
+
   public void run()
   {
     f = new JFrame();
@@ -65,7 +82,7 @@ public class PA3App implements ActionListener, Runnable
     f.setSize(600, 600);
 
     fileChooser = new JFileChooser();
-    
+
     try
     {
 
@@ -74,34 +91,33 @@ public class PA3App implements ActionListener, Runnable
       GeographicShapesReader reader = new GeographicShapesReader(in, proj);
       CartographyDocument<GeographicShape> model = reader.read();
 
-      panel = new CartographyPanel<GeographicShape>(model, new GeographicShapeCartographer(Color.BLACK));
+      panel = new CartographyPanel<GeographicShape>(model,
+          new GeographicShapeCartographer(Color.BLACK));
 
       JPanel cp = (JPanel) f.getContentPane();
       cp.setLayout(new BorderLayout());
       cp.add(panel, BorderLayout.CENTER);
-      
+
       JMenuBar menuBar = new JMenuBar();
       JMenuItem item;
       JMenu menu;
-      
+
       menu = new JMenu("File");
       menuBar.add(menu);
       item = new JMenuItem("Open");
       item.addActionListener(this);
       menu.add(item);
-      
+
       item = new JMenuItem("Exit");
       item.addActionListener(this);
       menu.add(item);
-      
+
       f.setJMenuBar(menuBar);
       f.setVisible(true);
     }
     catch (IOException ioe)
     {
-      JOptionPane.showMessageDialog(f, 
-          ioe.toString(),
-          "Error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(f, ioe.toString(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
 

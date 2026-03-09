@@ -31,5 +31,5 @@ public interface ViewTransformation
    *          the source content rectangle
    * @return the computed AffineTransform
    */
-  public abstract AffineTransform getTransform(Rectangle2D displayBounds, Rectangle2D contentBounds);
+  public abstract AffineTransform getTransform(final Rectangle2D displayBounds, final Rectangle2D contentBounds);
 }

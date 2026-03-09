@@ -4,8 +4,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Computes an affine transformation that maps content coordinates to display coordinates,
- * applying scaling and a Y-axis reflection to convert between coordinate systems.
+ * Computes an affine transformation that maps content coordinates to display coordinates, applying
+ * scaling and a Y-axis reflection to convert between coordinate systems.
  */
 public class DisplayCoordinatesTransformation implements ViewTransformation
 {
@@ -25,7 +25,8 @@ public class DisplayCoordinatesTransformation implements ViewTransformation
   }
 
   @Override
-  public AffineTransform getTransform(final Rectangle2D displayBounds, final Rectangle2D contentBounds)
+  public AffineTransform getTransform(final Rectangle2D displayBounds,
+      final Rectangle2D contentBounds)
   {
     // Find scale
     double scaleX = displayBounds.getWidth() / contentBounds.getWidth();

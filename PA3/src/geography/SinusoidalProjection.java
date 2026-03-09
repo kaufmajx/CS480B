@@ -23,7 +23,7 @@ public class SinusoidalProjection extends AbstractMapProjection
   {
     double phi = ns / R;
     double[] val;
-    double d1 = LAMBDA_ZERO + ew / R / Math.cos(phi);
+    double d1 = LAMBDA_ZERO + ew / R * Math.cos(phi);
     double d2 = phi;
     val = new double[] {d1, d2};
     return val;

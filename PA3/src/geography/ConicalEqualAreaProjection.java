@@ -24,7 +24,7 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
    * @param refP2
    *          the second standard parallel in degrees
    */
-  public ConicalEqualAreaProjection(double refM, double refP, double refP1, double refP2)
+  public ConicalEqualAreaProjection(final double refM, final double refP, final double refP1, final double refP2)
   {
     this.lambdaZero = Math.toRadians(refM);
     double refPRadian = Math.toRadians(refP);
@@ -32,14 +32,13 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
     double refP2Radian = Math.toRadians(refP2);
 
     this.n = 0.5 * (Math.sin(refP1Radian) + Math.sin(refP2Radian));
-    this.c = Math.pow(Math.cos(refP1Radian), 2) + (2 * n * Math.sin(refP2Radian));
+    this.c = Math.pow(Math.cos(refP1Radian), 2) + (2 * this.n * Math.sin(refP1Radian));
     this.p0 = Math.sqrt(this.c - (2 * this.n * Math.sin(refPRadian))) / this.n;
   }
 
   @Override
-  public double[] forward(double lambda, double phi)
-  {
-
+  public double[] forward(final double lambda, final double phi)
+  { 
     double p = Math.sqrt(this.c - 2 * this.n * Math.sin(phi)) / this.n;
     double theta = this.n * (lambda - lambdaZero);
 
@@ -52,13 +51,13 @@ public class ConicalEqualAreaProjection extends AbstractMapProjection
   }
 
   @Override
-  public double[] inverse(double ew, double ns)
+  public double[] inverse(final double ew, final double ns)
   {
     double a = Math.sqrt(Math.pow(ew / R, 2) + Math.pow(this.p0 - ns / R, 2));
     double b = Math.atan2((ew / R), (this.p0 - ns / R));
 
     double[] val;
-    double phi = Math.asin((this.c - Math.pow(a, 2) * Math.pow(n, 2))) / (2 * this.n);
+    double phi = Math.asin((this.c - (a * this.n) * (a * this.n)) / (2 * this.n));
     double lambda = lambdaZero + b / this.n;
 
     val = new double[] {phi, lambda};

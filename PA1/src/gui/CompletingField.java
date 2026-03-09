@@ -1,7 +1,7 @@
 package gui;
 
-import javax.swing.text.Document;
 import javax.swing.JTextField;
+import javax.swing.text.Document;
 
 // VIEW / CONTROLLER
 /**

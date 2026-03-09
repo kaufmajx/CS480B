@@ -1,6 +1,5 @@
 package geography;
 
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.IOException;

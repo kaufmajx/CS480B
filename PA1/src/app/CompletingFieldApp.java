@@ -1,12 +1,19 @@
 package app;
 
-import gui.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import javax.imageio.*;
-import javax.swing.*;
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import gui.CompletingField;
 
 /**
  * An app that can be used to test the CompletingField and CompletingDocument
