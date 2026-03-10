@@ -20,7 +20,6 @@ public class GeographicShapesReader
   private MapProjection proj;
   private String tabChar = "\t";
 
-
   /**
    * Constructs a GeographicShapesReader from the given input stream and projection.
    * 
