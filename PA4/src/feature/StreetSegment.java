@@ -16,20 +16,55 @@ public class StreetSegment extends AbstractFeature
       int highAddress, int tail, int head, double length)
   {
     super(id);
+    this.length = length;
+    this.head = head;
+    this.tail = tail;
+    this.highAddress = highAddress;
+    this.lowAddress = lowAddress;
+    this.geographicShape = shape;
+    this.code = code;
+  }
+
+  public double getLength()
+  {
+    return length;
+  }
+
+  public int getHead()
+  {
+    return head;
+  }
+
+  public int getTail()
+  {
+    return tail;
+  }
+
+  public int getHighAddress()
+  {
+    return highAddress;
+  }
+
+  public double getLowAddress()
+  {
+    return lowAddress;
+  }
+
+  public String getCode()
+  {
+    return code;
   }
 
   @Override
   public String getID()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return super.getID();
   }
 
   @Override
   public GeographicShape getGeographicShape()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return geographicShape;
   }
 
 }

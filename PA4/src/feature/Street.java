@@ -1,6 +1,7 @@
 package feature;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,7 +20,13 @@ public class Street
 
   public Street(String prefix, String name, String category, String suffix, String code)
   {
-
+    this.prefix = prefix;
+    this.name = name;
+    this.category = category;
+    this.suffix = suffix;
+    this.code = code;
+    
+    segments = new ArrayList<StreetSegment>();
   }
 
   public void addSegment(StreetSegment segment)
@@ -27,9 +34,13 @@ public class Street
 
   }
 
+  // idk what to do with the suffix? ex: would it be "Water Ave E"
   public static String createCanonicalName(String prefix, String name, String category, String suffix)
   {
-    return null;
+    // prefix like = E, N, S, W
+    // category like = RD, ST, AVE
+    // suffix like = E, N, S, W
+    return prefix + name + category + suffix;
   }
 
   public List<StreetSegment> getSegments(int number)
