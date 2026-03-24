@@ -30,64 +30,59 @@ public class StreetsReader
 
   public CartographyDocument<StreetSegment> read(Map<String, Street> streets) throws IOException
   {
-    streets = new HashMap<>();
+    // streets = new HashMap<>();
 
     double minX = Double.MAX_VALUE;
     double minY = Double.MAX_VALUE;
     double maxX = -Double.MAX_VALUE;
     double maxY = -Double.MAX_VALUE;
 
+    Map<String, StreetSegment> segments = new HashMap<>();
+
     try
     {
       String line;
-
       while ((line = in.readLine()) != null)
       {
         line = line.trim();
-        System.out.println(line);
+        if (line.isEmpty())
+          continue;
 
-        String[] shapeInfo = line.split("\t");
-//        System.out.println("Shape Info:");
+        String[] fields = line.split("\t");
+        for (int i = 0; i < fields.length; i++)
+          fields[i] = fields[i].trim();
         
-        Street newSt = new StreetSegment(shapeInfo[4], shapeInfo[3], shape, low, high, shapeInfo[0], shapeInfo[1], shapeInfo[2]);
+        if (fields.length < 11)
+          continue;
+        int tailNode = Integer.parseInt(fields[0]);
+        int headNode = Integer.parseInt(fields[1]);
+        double length = Double.parseDouble(fields[2]);
+        String tigerCode = fields[3];
+        String arcID = fields[4];
+        String pre = fields[5];
+        String name = fields[6];
+        String category = fields[7];
+        String suf = fields[8];
+        int tailAddr = Integer.parseInt(fields[9]);
+        int headAddr = Integer.parseInt(fields[10]);
+
+        GeographicShape shape = geographicShapes.getElement(arcID);
+
+        String fullName = Street.createCanonicalName(pre, name, category, suf);
+
+        Street street = streets.get(fullName);
+
+        if (street == null)
+        {
+          street = new Street(pre, name, category, suf, tigerCode);
+          streets.put(fullName, street);
+        }
+
+        StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, tailAddr, headAddr,
+            tailNode, headNode, length);
         
-        
-        
-        if (shapeInfo.length >= 4 && shapeInfo[0].equals("Type:"))
-//        {
-//          String id = shapeInfo[3];
-//          PieceWiseLinearCurve newShape = null;
-//
-//          if (shapeInfo[1].equals("Polygon"))
-//          {
-//            newShape = new Polygon(id);
-//          }
-//          else if (shapeInfo[1].equals("PiecewiseLinearCurve"))
-//          {
-//            newShape = new PieceWiseLinearCurve(id);
-//          }
-//
-//          while ((line = in.readLine()) != null && !line.trim().equals("END"))
-//          {
-//            line = line.trim();
-//            if (line.isEmpty())
-//              continue;
-//
-//            String[] points = line.split("\t");
-//
-////            double[] projected = proj.forward(
-////                new double[] {Double.parseDouble(points[0]), Double.parseDouble(points[1])});
-////
-////            newShape.add(projected);
-////
-////            minX = Math.min(minX, projected[0]);
-////            minY = Math.min(minY, projected[1]);
-////            maxX = Math.max(maxX, projected[0]);
-////            maxY = Math.max(maxY, projected[1]);
-//          }
-//
-////          elements.put(id, newShape);
-//        }
+        street.addSegment(segment);
+        segments.put(arcID, segment);
       }
     }
     catch (IOException e)
@@ -95,8 +90,11 @@ public class StreetsReader
       e.printStackTrace();
     }
 
+    
+    if (segments.isEmpty())
+      return new CartographyDocument<>(segments, new Rectangle2D.Double());
+    
     Rectangle2D.Double bounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-
-    return null;
+    return new CartographyDocument<>(segments, bounds);
   }
 }
