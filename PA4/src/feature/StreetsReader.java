@@ -84,10 +84,10 @@ public class StreetsReader
     }
 
     if (segments.isEmpty())
-      return new CartographyDocument<>(segments, new Rectangle2D.Double());
+      return new CartographyDocument<StreetSegment>(segments, new Rectangle2D.Double());
 
     Rectangle2D.Double bounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-    return new CartographyDocument<>(segments, bounds);
+    return new CartographyDocument<StreetSegment>(segments, bounds);
   }
 
   private static int parseIntSafe(String s)
