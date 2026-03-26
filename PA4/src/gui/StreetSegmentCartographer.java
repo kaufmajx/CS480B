@@ -48,8 +48,6 @@ public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
       Theme currTheme = themes.getTheme(ss.getCode());
       g2.setColor(currTheme.getColor());
       g2.setStroke(currTheme.getStroke());
-      if (ss.getCode().trim().equals("A1"))
-        System.out.println(currTheme.getStroke());
       g2.draw(transformed);
     }
   }
