@@ -1,12 +1,12 @@
 package feature;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import geography.GeographicShape;
 import geography.PieceWiseLinearCurve;
+import geography.Polygon;
 
 public class Street
 {
@@ -27,6 +27,8 @@ public class Street
     this.code = code;
     
     segments = new ArrayList<StreetSegment>();
+    
+    shape = new Polygon(code);
   }
 
   public void addSegment(StreetSegment segment)

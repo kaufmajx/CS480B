@@ -59,7 +59,7 @@ public class GeographicShapeCartographer<T> implements Cartographer<GeographicSh
     {
       Shape transformed = af.createTransformedShape(t.getShape());
       g2.draw(transformed);
-      // System.out.print("Shape drawn: " + t.getID());
+       System.out.println("Shape drawn: " + t.getID());
     }
 
     // g2.setTransform(old);
