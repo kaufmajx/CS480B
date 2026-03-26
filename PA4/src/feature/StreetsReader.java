@@ -49,7 +49,10 @@ public class StreetsReader
         int tailNode = parseIntSafe(getField(fields, 0));
         int headNode = parseIntSafe(getField(fields, 1));
         double length = parseDoubleSafe(getField(fields, 2));
-        String tigerCode = getField(fields, 3);
+        String tempTigerCode = getField(fields, 3);
+        char first = tempTigerCode.charAt(0);
+        char last = tempTigerCode.charAt(1);
+        String tigerCode = "" + first + last;
         String arcID = getField(fields, 4);
         String pre = getField(fields, 5);
         String name = getField(fields, 6);
