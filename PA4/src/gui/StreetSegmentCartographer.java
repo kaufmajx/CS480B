@@ -1,7 +1,7 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.Iterator;
@@ -28,12 +28,11 @@ public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
     g2.setColor(currTheme.getColor());
     g2.setStroke(currTheme.getStroke());
 
-
     Iterator<StreetSegment> it = model.highlighted();
     while (it.hasNext())
     {
       Shape transformed = af.createTransformedShape(it.next().getGeographicShape().getShape());
-      // g2.fill(transformed); // fill to make highlights stand out
+      g2.fill(transformed);
       g2.draw(transformed);
     }
 
@@ -49,9 +48,10 @@ public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
       Theme currTheme = themes.getTheme(ss.getCode());
       g2.setColor(currTheme.getColor());
       g2.setStroke(currTheme.getStroke());
+      if (ss.getCode().trim().equals("A1"))
+        System.out.println(currTheme.getStroke());
       g2.draw(transformed);
     }
-
   }
 
 }

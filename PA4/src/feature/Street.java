@@ -34,14 +34,6 @@ public class Street
   public void addSegment(StreetSegment segment)
   {
     segments.add(segment);
-    
-//    PieceWiseLinearCurve segmentCurve = segment.getShape();
-//    if (segmentCurve != null)
-//    {
-//        if (shape == null)
-//            shape = new PieceWiseLinearCurve(createCanonicalName(prefix, name, category, suffix));
-//        shape.add(segmentCurve);
-//    }
   }
 
   // idk what to do with the suffix? ex: would it be "Water Ave E"

@@ -45,7 +45,7 @@ public class StreetsReader
           continue;
 
         String[] fields = line.split("\t", -1);
-        
+
         int tailNode = parseIntSafe(getField(fields, 0));
         int headNode = parseIntSafe(getField(fields, 1));
         double length = parseDoubleSafe(getField(fields, 2));
@@ -58,8 +58,17 @@ public class StreetsReader
         int tailAddr = parseIntSafe(getField(fields, 9));
         int headAddr = parseIntSafe(getField(fields, 10));
 
-        
         GeographicShape shape = geographicShapes.getElement(arcID);
+
+        if (shape != null && shape.getShape() != null)
+        {
+          Rectangle2D sb = shape.getShape().getBounds2D();
+
+          minX = Math.min(minX, sb.getMinX());
+          minY = Math.min(minY, sb.getMinY());
+          maxX = Math.max(maxX, sb.getMaxX());
+          maxY = Math.max(maxY, sb.getMaxY());
+        }
 
         String fullName = Street.createCanonicalName(pre, name, category, suf);
 
@@ -113,11 +122,13 @@ public class StreetsReader
       return 0.0;
     }
   }
-  
-  private static String getField(String[] fields, int index) {
-    if (index < fields.length && fields[index] != null) {
-        return fields[index].trim();
+
+  private static String getField(String[] fields, int index)
+  {
+    if (index < fields.length && fields[index] != null)
+    {
+      return fields[index].trim();
     }
     return "";
-}
+  }
 }

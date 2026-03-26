@@ -1,6 +1,7 @@
 package math;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -28,30 +29,30 @@ public class DisplayCoordinatesTransformation implements ViewTransformation
   public AffineTransform getTransform(final Rectangle2D displayBounds,
       final Rectangle2D contentBounds)
   {
-    // Find scale
     double scaleX = displayBounds.getWidth() / contentBounds.getWidth();
     double scaleY = displayBounds.getHeight() / contentBounds.getHeight();
     double scale = Math.min(scaleX, scaleY);
 
-    // move content origin
-    AffineTransform translate = new AffineTransform();
+    AffineTransform at = new AffineTransform();
 
-    translate.translate(displayBounds.getX() - contentBounds.getMinX() * scale,
-        displayBounds.getY() + contentBounds.getMaxY() * scale);
+    // Step 1: move to display origin
+    at.translate(displayBounds.getX(), displayBounds.getY());
 
-    // Perform scale
-    AffineTransform scaleAndReflect = new AffineTransform();
-    scaleAndReflect.scale(scale, -scale);
+    // Step 2: move origin to bottom-left of display (because of Y flip)
+    at.translate(0, displayBounds.getHeight());
 
-    // Store the reflection (Y-flip only, no scaling) for getLastReflection()
+    // Step 3: scale + flip Y
+    at.scale(scale, -scale);
+
+    // Step 4: shift content into view
+    at.translate(-contentBounds.getMinX(), -contentBounds.getMinY());
+
+    // Store reflection only
     lastReflection = new AffineTransform();
     lastReflection.scale(1.0, -1.0);
 
-    AffineTransform fullTranslate = new AffineTransform(translate);
-    fullTranslate.concatenate(scaleAndReflect);
-
-    lastTransform = fullTranslate;
-    return new AffineTransform(fullTranslate);
+    lastTransform = new AffineTransform(at);
+    return at;
   }
 
 }

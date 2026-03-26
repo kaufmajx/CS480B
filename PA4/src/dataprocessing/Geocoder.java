@@ -26,24 +26,25 @@ public class Geocoder
   public List<double[]> geocode(String canonicalName, int streetNumber, List<String> segmentIDs)
   {
     List<double[]> results = new ArrayList<double[]>();
-    
+
     Street street = streets.get(canonicalName);
-    if (street == null) {
+    if (street == null)
+    {
       return results;
     }
-    
+
     Iterator<StreetSegment> it = street.getSegments();
-    while (it.hasNext()) {
+    while (it.hasNext())
+    {
       StreetSegment seg = it.next();
       if (streetNumber < seg.getLowAddress() || streetNumber > seg.getHighAddress())
         continue;
-      
+
       double range = seg.getHighAddress() - seg.getLowAddress();
-      double x = (range == 0) ? 0.5 : (streetNumber - seg.getLowAddress() /range); // idk
-      
-            
+      double x = (range == 0) ? 0.5 : (streetNumber - seg.getLowAddress() / range); // idk
+
     }
-    
+
     return results;
   }
 }
