@@ -10,15 +10,34 @@ import feature.StreetThemeLibrary;
 import geography.Theme;
 import geography.ThemeLibrary;
 
+/**
+ * Renders StreetSegment objects onto a Graphics2D context using themes from a StreetThemeLibrary.
+ *
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1.0
+ */
 public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
 {
   private ThemeLibrary themes;
 
+  /**
+   * Constructs a StreetSegmentCartographer with a default StreetThemeLibrary.
+   */
   public StreetSegmentCartographer()
   {
     themes = new StreetThemeLibrary();
   }
 
+  /**
+   * Paints the highlighted street segments using the highlight theme.
+   *
+   * @param model
+   *          the document containing the highlighted segments to draw
+   * @param g2
+   *          the graphics context to draw on
+   * @param af
+   *          the transform to convert from geographic to screen coordinates
+   */
   @Override
   public void paintHighlights(final CartographyDocument<StreetSegment> model, final Graphics2D g2,
       final AffineTransform af)
@@ -37,6 +56,16 @@ public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
 
   }
 
+  /**
+   * Paints all street segments in the document using their corresponding themes.
+   *
+   * @param model
+   *          the document containing all segments to draw
+   * @param g2
+   *          the graphics context to draw on
+   * @param af
+   *          the transform to convert from geographic to screen coordinates
+   */
   @Override
   public void paintShapes(final CartographyDocument<StreetSegment> model, final Graphics2D g2,
       final AffineTransform af)

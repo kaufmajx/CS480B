@@ -73,14 +73,14 @@ public class PA4App implements ActionListener, Runnable, StreetSegmentObserver
     try
     {
       InputStream isgeo = new FileInputStream(new File("rockingham-streets-2024.geo"));
-      // InputStream isgeo = new FileInputStream(new File("va-streets-2024.geo"));
+//       InputStream isgeo = new FileInputStream(new File("va-streets-2024.geo"));
       AbstractMapProjection proj = new ConicalEqualAreaProjection(-96.0, 37.5, 29.5, 45.5);
       GeographicShapesReader gsReader = new GeographicShapesReader(isgeo, proj);
       CartographyDocument<GeographicShape> geographicShapes = gsReader.read();
       System.out.println("Read the .geo file");
 
       InputStream iss = new FileInputStream(new File("rockingham-streets-2024.str"));
-      // InputStream iss = new FileInputStream(new File("va-streets-2024.str"));
+//       InputStream iss = new FileInputStream(new File("va-streets-2024.str"));
       StreetsReader sReader = new StreetsReader(iss, geographicShapes);
       Map<String, Street> streets = new HashMap<String, Street>();
       segments = sReader.read(streets);

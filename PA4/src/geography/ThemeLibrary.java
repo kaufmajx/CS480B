@@ -1,7 +1,5 @@
 package geography;
 
-import feature.StreetThemeLibrary;
-
 public interface ThemeLibrary
 {
 

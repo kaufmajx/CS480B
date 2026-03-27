@@ -11,12 +11,26 @@ import java.util.Map;
 import geography.GeographicShape;
 import gui.CartographyDocument;
 
+/**
+ * Reads a .str file and constructs a CartographyDocument of StreetSegments.
+ *
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1.0
+ */
 public class StreetsReader
 {
   private BufferedReader in;
   private CartographyDocument<GeographicShape> geographicShapes;
 
-  public StreetsReader(InputStream is, CartographyDocument<GeographicShape> shapes)
+  /**
+   * Constructs a StreetsReader for the given input stream and geographic shapes.
+   *
+   * @param is
+   *          the input stream of the .str file
+   * @param shapes
+   *          the geographic shapes document used to look up segment geometry
+   */
+  public StreetsReader(final InputStream is, final CartographyDocument<GeographicShape> shapes)
   {
     InputStreamReader isr = new InputStreamReader(is);
     in = new BufferedReader(isr);
@@ -24,7 +38,19 @@ public class StreetsReader
     this.geographicShapes = shapes;
   }
 
-  public CartographyDocument<StreetSegment> read(Map<String, Street> streets) throws IOException
+  /**
+   * Reads the .str file and populates the given streets map. Each line is parsed into a
+   * StreetSegment and added to its corresponding Street.
+   *
+   * @param streets
+   *          an empty map that will be populated with canonical street names mapped to their Street
+   *          objects
+   * @return a CartographyDocument containing all parsed StreetSegments and their bounds
+   * @throws IOException
+   *           if an error occurs while reading the file
+   */
+  public CartographyDocument<StreetSegment> read(final Map<String, Street> streets)
+      throws IOException
   {
     // streets = new HashMap<>();
 
@@ -83,11 +109,11 @@ public class StreetsReader
           streets.put(fullName, street);
         }
 
-        int low  = Math.min(tailAddr, headAddr);
+        int low = Math.min(tailAddr, headAddr);
         int high = Math.max(tailAddr, headAddr);
 
-        StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, low, high,
-            tailNode, headNode, length);
+        StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, low, high, tailNode,
+            headNode, length);
 
         street.addSegment(segment);
         segments.put(arcID, segment);
@@ -105,7 +131,14 @@ public class StreetsReader
     return new CartographyDocument<StreetSegment>(segments, bounds);
   }
 
-  private static int parseIntSafe(String s)
+  /**
+   * Parses a string as an integer, returning 0 if the string is null, empty, or not a number.
+   *
+   * @param s
+   *          the string to parse
+   * @return the parsed integer, or 0 if parsing fails
+   */
+  private static int parseIntSafe(final String s)
   {
     try
     {
@@ -117,7 +150,14 @@ public class StreetsReader
     }
   }
 
-  private static double parseDoubleSafe(String s)
+  /**
+   * Parses a string as a double, returning 0.0 if the string is null, empty, or not a number.
+   *
+   * @param s
+   *          the string to parse
+   * @return the parsed double, or 0.0 if parsing fails
+   */
+  private static double parseDoubleSafe(final String s)
   {
     try
     {
@@ -129,7 +169,17 @@ public class StreetsReader
     }
   }
 
-  private static String getField(String[] fields, int index)
+  /**
+   * Safely retrieves a field from a split line by index, returning an empty string if the index is
+   * out of bounds.
+   *
+   * @param fields
+   *          the array of tab-split fields from a line
+   * @param index
+   *          the index of the field to retrieve
+   * @return the trimmed field value, or an empty string if out of bounds
+   */
+  private static String getField(final String[] fields, final int index)
   {
     if (index < fields.length && fields[index] != null)
     {

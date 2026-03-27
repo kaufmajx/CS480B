@@ -15,7 +15,7 @@ import java.util.LinkedList;
 
 import javax.swing.JPanel;
 
-import math.*;
+import math.DisplayCoordinatesTransformation;
 
 /**
  * A GUI component that can be extended to draw maps of various kinds.

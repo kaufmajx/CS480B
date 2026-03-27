@@ -25,8 +25,10 @@ public interface ViewTransformation
   /**
    * Computes and returns the transform that maps content bounds to display bounds.
    * 
-   * @param displayBounds the target display rectangle
-   * @param contentBounds the source content rectangle
+   * @param displayBounds
+   *          the target display rectangle
+   * @param contentBounds
+   *          the source content rectangle
    * @return the computed AffineTransform
    */
   public abstract AffineTransform getTransform(final Rectangle2D displayBounds,

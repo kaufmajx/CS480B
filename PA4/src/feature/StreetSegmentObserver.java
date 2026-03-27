@@ -13,7 +13,8 @@ public interface StreetSegmentObserver
   /**
    * Respond to handleStreetSegments() messages.
    * 
-   * @param segmentIDs The IDs of the StreetSegment objects
+   * @param segmentIDs
+   *          The IDs of the StreetSegment objects
    */
-  public abstract void handleStreetSegments(List<String> segmentIDs);
+  public abstract void handleStreetSegments(final List<String> segmentIDs);
 }

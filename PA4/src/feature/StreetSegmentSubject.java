@@ -11,14 +11,16 @@ public interface StreetSegmentSubject
   /**
    * Add a StreetSegmentObserver.
    * 
-   * @param observer The observer
+   * @param observer
+   *          The observer
    */
   public abstract void addStreetSegmentObserver(final StreetSegmentObserver observer);
 
   /**
    * Remove a StreetSegmentObserver.
    * 
-   * @param observer The observer
+   * @param observer
+   *          The observer
    */
   public abstract void removeStreetSegmentObserver(final StreetSegmentObserver observer);
 }

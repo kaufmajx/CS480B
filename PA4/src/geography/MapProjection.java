@@ -17,7 +17,7 @@ public interface MapProjection
    *          The longitude and latitude in __degrees__ (in that order)
    * @return KMs west of reference and north of equator (in that order)
    */
-  public abstract double[] forward(double[] ll);
+  public abstract double[] forward(final double[] ll);
 
   /**
    * The forward transformation (i.e., from Longitude/Latitude in __radians__ to kilometers above
@@ -29,7 +29,7 @@ public interface MapProjection
    *          The latitude in __radians__
    * @return KMs west of reference and north of equator (in that order)
    */
-  public abstract double[] forward(double lambda, double phi);
+  public abstract double[] forward(final double lambda, final double phi);
 
   /**
    * The inverse transformation from kilometers (above the equator and to the west of the reference
@@ -39,7 +39,7 @@ public interface MapProjection
    *          The point in above,west coordinates (in that order)
    * @return The longitude and latitude in __degrees__ (in that order)
    */
-  public abstract double[] inverse(double[] km);
+  public abstract double[] inverse(final double[] km);
 
   /**
    * The inverse transformation from kilometers (above the equator and to the west of the reference
@@ -51,5 +51,5 @@ public interface MapProjection
    *          The distance north/south in kilometers
    * @return The longitude and latitude in __radians__ (in that order)
    */
-  public abstract double[] inverse(double ew, double ns);
+  public abstract double[] inverse(final double ew, final double ns);
 }
