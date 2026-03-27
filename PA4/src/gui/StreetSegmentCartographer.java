@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.util.Iterator;
@@ -21,8 +20,8 @@ public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
   }
 
   @Override
-  public void paintHighlights(CartographyDocument<StreetSegment> model, Graphics2D g2,
-      AffineTransform af)
+  public void paintHighlights(final CartographyDocument<StreetSegment> model, final Graphics2D g2,
+      final AffineTransform af)
   {
     Theme currTheme = themes.getHighlightTheme();
     g2.setColor(currTheme.getColor());
@@ -39,8 +38,8 @@ public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
   }
 
   @Override
-  public void paintShapes(CartographyDocument<StreetSegment> model, Graphics2D g2,
-      AffineTransform af)
+  public void paintShapes(final CartographyDocument<StreetSegment> model, final Graphics2D g2,
+      final AffineTransform af)
   {
     for (StreetSegment ss : model)
     {
