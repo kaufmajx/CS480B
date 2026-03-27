@@ -83,7 +83,10 @@ public class StreetsReader
           streets.put(fullName, street);
         }
 
-        StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, tailAddr, headAddr,
+        int low  = Math.min(tailAddr, headAddr);
+        int high = Math.max(tailAddr, headAddr);
+
+        StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, low, high,
             tailNode, headNode, length);
 
         street.addSegment(segment);

@@ -45,7 +45,7 @@ public class StreetSegment extends AbstractFeature
     return highAddress;
   }
 
-  public double getLowAddress()
+  public int getLowAddress()
   {
     return lowAddress;
   }

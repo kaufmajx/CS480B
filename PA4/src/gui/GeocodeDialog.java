@@ -100,12 +100,15 @@ public class GeocodeDialog extends JDialog implements
     try
     {
       number = Integer.parseInt(numberField.getText());
+      System.out.println("Number entered: " + number);
       String canonicalName = Street.createCanonicalName(prefix, name, category, suffix);
+      System.out.println("Canonical name entered: " + canonicalName);
       ids = new ArrayList<String>();
       List<double[]> locations = geocoder.geocode(canonicalName, number, ids);
       List<String> lonlat = new ArrayList<String>();
       for (double[] location: locations) lonlat.add(location[0] + "," + location[1]);
       displayResults(lonlat);
+//      notifyStreetSegmentObservers(selectedIDs);
     }
     catch (NumberFormatException nfe)
     {

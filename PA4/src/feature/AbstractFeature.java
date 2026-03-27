@@ -6,6 +6,7 @@ public abstract class AbstractFeature implements Feature
 
   public AbstractFeature(String id)
   {
+    this.id = id;
   }
   
   public String getID()

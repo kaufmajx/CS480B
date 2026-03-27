@@ -114,6 +114,7 @@ public class PA4App implements ActionListener, Runnable, StreetSegmentObserver
       
       Geocoder geocoder = new Geocoder(geographicShapes, segments, streets);
       dialog = new GeocodeDialog(frame, geocoder);
+      System.out.println("geocoder made");
       dialog.addStreetSegmentObserver(this);
       dialog.setLocation((int)frame.getBounds().getMaxX(), (int)frame.getBounds().getY());
       dialog.setVisible(true);

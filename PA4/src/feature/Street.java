@@ -42,7 +42,7 @@ public class Street
     // prefix like = E, N, S, W
     // category like = RD, ST, AVE
     // suffix like = E, N, S, W
-    return prefix + name + category + suffix;
+    return prefix + " " + name + " " + category + " " + suffix;
   }
 
   public List<StreetSegment> getSegments(int number)
