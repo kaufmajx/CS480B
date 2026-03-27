@@ -68,7 +68,7 @@ public class GeographicShapesReader
 
         if (shapeInfo.length >= 4 && shapeInfo[0].equals("Type:"))
         {
-          String id = shapeInfo[3];
+          String id = shapeInfo[3].strip();
           PieceWiseLinearCurve newShape = null;
 
           if (shapeInfo[1].equals("Polygon"))

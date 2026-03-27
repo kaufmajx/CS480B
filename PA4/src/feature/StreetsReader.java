@@ -1,18 +1,14 @@
 package feature;
 
 import java.awt.geom.Rectangle2D;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
 import geography.GeographicShape;
-import geography.PieceWiseLinearCurve;
-import geography.Polygon;
 import gui.CartographyDocument;
 
 public class StreetsReader
@@ -44,29 +40,38 @@ public class StreetsReader
       String line;
       while ((line = in.readLine()) != null)
       {
-        line = line.trim();
+        line = line.trim().strip();
         if (line.isEmpty())
           continue;
 
-        String[] fields = line.split("\t");
-        for (int i = 0; i < fields.length; i++)
-          fields[i] = fields[i].trim();
-        
-        if (fields.length < 11)
-          continue;
-        int tailNode = Integer.parseInt(fields[0]);
-        int headNode = Integer.parseInt(fields[1]);
-        double length = Double.parseDouble(fields[2]);
-        String tigerCode = fields[3];
-        String arcID = fields[4];
-        String pre = fields[5];
-        String name = fields[6];
-        String category = fields[7];
-        String suf = fields[8];
-        int tailAddr = Integer.parseInt(fields[9]);
-        int headAddr = Integer.parseInt(fields[10]);
+        String[] fields = line.split("\t", -1);
+
+        int tailNode = parseIntSafe(getField(fields, 0));
+        int headNode = parseIntSafe(getField(fields, 1));
+        double length = parseDoubleSafe(getField(fields, 2));
+        String tempTigerCode = getField(fields, 3);
+        char first = tempTigerCode.charAt(0);
+        char last = tempTigerCode.charAt(1);
+        String tigerCode = "" + first + last;
+        String arcID = getField(fields, 4);
+        String pre = getField(fields, 5);
+        String name = getField(fields, 6);
+        String category = getField(fields, 7);
+        String suf = getField(fields, 8);
+        int tailAddr = parseIntSafe(getField(fields, 9));
+        int headAddr = parseIntSafe(getField(fields, 10));
 
         GeographicShape shape = geographicShapes.getElement(arcID);
+
+        if (shape != null && shape.getShape() != null)
+        {
+          Rectangle2D sb = shape.getShape().getBounds2D();
+
+          minX = Math.min(minX, sb.getMinX());
+          minY = Math.min(minY, sb.getMinY());
+          maxX = Math.max(maxX, sb.getMaxX());
+          maxY = Math.max(maxY, sb.getMaxY());
+        }
 
         String fullName = Street.createCanonicalName(pre, name, category, suf);
 
@@ -80,7 +85,7 @@ public class StreetsReader
 
         StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, tailAddr, headAddr,
             tailNode, headNode, length);
-        
+
         street.addSegment(segment);
         segments.put(arcID, segment);
       }
@@ -90,11 +95,43 @@ public class StreetsReader
       e.printStackTrace();
     }
 
-    
     if (segments.isEmpty())
-      return new CartographyDocument<>(segments, new Rectangle2D.Double());
-    
+      return new CartographyDocument<StreetSegment>(segments, new Rectangle2D.Double());
+
     Rectangle2D.Double bounds = new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
-    return new CartographyDocument<>(segments, bounds);
+    return new CartographyDocument<StreetSegment>(segments, bounds);
+  }
+
+  private static int parseIntSafe(String s)
+  {
+    try
+    {
+      return (s == null || s.isEmpty()) ? 0 : Integer.parseInt(s);
+    }
+    catch (NumberFormatException e)
+    {
+      return 0;
+    }
+  }
+
+  private static double parseDoubleSafe(String s)
+  {
+    try
+    {
+      return (s == null || s.isEmpty()) ? 0.0 : Double.parseDouble(s);
+    }
+    catch (NumberFormatException e)
+    {
+      return 0.0;
+    }
+  }
+
+  private static String getField(String[] fields, int index)
+  {
+    if (index < fields.length && fields[index] != null)
+    {
+      return fields[index].trim();
+    }
+    return "";
   }
 }

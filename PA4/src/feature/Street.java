@@ -1,12 +1,12 @@
 package feature;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import geography.GeographicShape;
 import geography.PieceWiseLinearCurve;
+import geography.Polygon;
 
 public class Street
 {
@@ -27,19 +27,13 @@ public class Street
     this.code = code;
     
     segments = new ArrayList<StreetSegment>();
+    
+    shape = new Polygon(code);
   }
 
   public void addSegment(StreetSegment segment)
   {
     segments.add(segment);
-    
-//    PieceWiseLinearCurve segmentCurve = segment.getShape();
-//    if (segmentCurve != null)
-//    {
-//        if (shape == null)
-//            shape = new PieceWiseLinearCurve(createCanonicalName(prefix, name, category, suffix));
-//        shape.add(segmentCurve);
-//    }
   }
 
   // idk what to do with the suffix? ex: would it be "Water Ave E"

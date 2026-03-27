@@ -1,15 +1,15 @@
 package feature;
+
 import geography.ThemeLibrary;
 import geography.Theme;
 
 import java.awt.*;
 import java.util.*;
 
-
 /**
  * A ThemeLibrary for use with Street objects.
  *
- * @author  Prof. David Bernstein, James Madison University
+ * @author Prof. David Bernstein, James Madison University
  * @version 1
  */
 public class StreetThemeLibrary implements ThemeLibrary
@@ -18,7 +18,7 @@ public class StreetThemeLibrary implements ThemeLibrary
 
   private Theme highlightTheme;
   private Map<String, Theme> themes;
-  
+
   /**
    * Default Constructor.
    */
@@ -27,11 +27,11 @@ public class StreetThemeLibrary implements ThemeLibrary
     themes = new HashMap<String, Theme>();
 
     // Interstate, U.S., and other highways
-    themes.put("A1", new Theme(new Color(  0, 153, 204), new BasicStroke(3.0f)));
+    themes.put("A1", new Theme(new Color(0, 153, 204), new BasicStroke(3.0f)));
     themes.put("A2", new Theme(new Color(102, 153, 204), new BasicStroke(1.0f)));
 
     // Secondary and connecting roads
-    themes.put("A3",  new Theme(new Color(102, 153, 102), new BasicStroke(3.0f)));
+    themes.put("A3", new Theme(new Color(102, 153, 102), new BasicStroke(3.0f)));
 
     // Local roads and special purpose roads
     themes.put("A4", new Theme(new Color(153, 153, 153), new BasicStroke(1.0f)));
@@ -41,15 +41,13 @@ public class StreetThemeLibrary implements ThemeLibrary
     float[] pattern = new float[2];
     pattern[0] = 10.0f;
     pattern[1] = 10.0f;
-    themes.put("A5", new Theme(new Color(211,211,211), 
-        new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 
-            10.0f, pattern, 0.0f)));
-    themes.put("A7", new Theme(new Color(211,211,211), 
-        new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 
-            10.0f, pattern, 0.0f)));
+    themes.put("A5", new Theme(new Color(211, 211, 211), new BasicStroke(1.0f,
+        BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, pattern, 0.0f)));
+    themes.put("A7", new Theme(new Color(211, 211, 211), new BasicStroke(1.0f,
+        BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f, pattern, 0.0f)));
 
     // Highlighted elements
-    highlightTheme = new Theme(new Color(  0, 255, 0, 128), new BasicStroke(5.0f));
+    highlightTheme = new Theme(new Color(0, 255, 0, 128), new BasicStroke(5.0f));
   }
 
   /**
@@ -66,17 +64,18 @@ public class StreetThemeLibrary implements ThemeLibrary
   /**
    * Get the Theme to use for the given code.
    * 
-   * @param code  The code
+   * @param code
+   *          The code
    * @return The Theme
    */
   @Override
   public Theme getTheme(final String code)
   {
     Theme result = themes.get(code);
-    if (result == null) result = DEFAULT_THEME;
+    if (result == null)
+      result = DEFAULT_THEME;
 
     return result;
   }
 
 }
-
