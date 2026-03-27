@@ -82,7 +82,8 @@ public class Street
     // prefix like = E, N, S, W
     // category like = RD, ST, AVE
     // suffix like = E, N, S, W
-    return prefix + " " + name + " " + category + " " + suffix;
+    String blankSpace = " ";
+    return prefix + blankSpace + name + blankSpace + category + blankSpace + suffix;
   }
 
   /**

@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class Intersection
 {
-  public List<StreetSegment> inbound;
-  public List<StreetSegment> outbound;
+  private List<StreetSegment> inbound;
+  private List<StreetSegment> outbound;
 
   /**
    * Constructs an Intersection with empty inbound and outbound segment lists.

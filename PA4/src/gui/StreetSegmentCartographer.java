@@ -15,6 +15,8 @@ import geography.ThemeLibrary;
  *
  * @author Jelal Kaufman & Tenley Kennett
  * @version 1.0
+ * @param <T>
+ *          unused type parameter, present for compatibility with Cartographer
  */
 public class StreetSegmentCartographer<T> implements Cartographer<StreetSegment>
 {
