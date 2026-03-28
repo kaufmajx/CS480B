@@ -115,7 +115,7 @@ public class StreetsReader
         StreetSegment segment = new StreetSegment(arcID, tigerCode, shape, low, high, tailNode,
             headNode, length);
 
-        street.addSegment(segment);
+        street.addSegment(segment); // FLAG
         segments.put(arcID, segment);
       }
     }

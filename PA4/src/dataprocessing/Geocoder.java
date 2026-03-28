@@ -74,35 +74,29 @@ public class Geocoder
       return results;
     }
 
-    // Collect ALL segment IDs for this street (for highlighting)
-    Iterator<StreetSegment> allSegs = street.getSegments();
-    while (allSegs.hasNext())
-    {
-      segmentIDs.add(allSegs.next().getID());
-    }
-
     // Now find the matched segment(s) to return interpolated coordinates
 
     Iterator<StreetSegment> it = street.getSegments();
+    System.out.println("=== Geocoding: '" + canonicalName + "' #" + streetNumber + " ===");
+    System.out.println("Segments found on street: ");
 
     while (it.hasNext())
     {
       StreetSegment seg = it.next();
 
-      int low = seg.getLowAddress();
-      int high = seg.getHighAddress();
-      // If the given number is out of range
-      if (streetNumber < low || streetNumber > high)
-      {
+      int lo = Math.min(seg.getLowAddress(), seg.getHighAddress());
+      int hi = Math.max(seg.getLowAddress(), seg.getHighAddress());
+
+      if (streetNumber < lo || streetNumber > hi)
         continue;
-      }
-      double t = (high == low) ? 0.5 : (double) (streetNumber - low) / (high - low);
+
+      segmentIDs.add(seg.getID()); // after check, so only matched segments
+
+      double t = (hi == lo) ? 0.5 : (double) (streetNumber - lo) / (hi - lo);
 
       GeographicShape geoShape = seg.getGeographicShape();
       if (geoShape == null)
-      {
         continue;
-      }
 
       List<double[]> points = new ArrayList<>();
 
@@ -169,10 +163,11 @@ public class Geocoder
 
         accumulated += segLen;
       }
-
+      System.out.println("    -> Interpolated point: (" + point[0] + ", " + point[1] + ")");
       results.add(point);
-
     }
+
+    System.out.println("Total results: " + results.size());
 
     return results;
   }

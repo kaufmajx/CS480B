@@ -60,10 +60,6 @@ public class Street
   public void addSegment(final StreetSegment segment)
   {
     segments.add(segment);
-//    String conName = createCanonicalName(prefix, name, category, suffix);
-//    if(conName.equals("S Main St"))
-//    System.out.println("Adding segment " + segment.getID() + " to " + segment.getLowAddress() + " " + segment.getHighAddress() + " " + conName + " (current size: " + segments.size() + ")");
-
   }
 
   /**
