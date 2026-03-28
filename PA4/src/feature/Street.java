@@ -60,6 +60,10 @@ public class Street
   public void addSegment(final StreetSegment segment)
   {
     segments.add(segment);
+//    String conName = createCanonicalName(prefix, name, category, suffix);
+//    if(conName.equals("S Main St"))
+//    System.out.println("Adding segment " + segment.getID() + " to " + segment.getLowAddress() + " " + segment.getHighAddress() + " " + conName + " (current size: " + segments.size() + ")");
+
   }
 
   /**
@@ -79,11 +83,17 @@ public class Street
   public static String createCanonicalName(final String prefix, final String name,
       final String category, final String suffix)
   {
-    // prefix like = E, N, S, W
-    // category like = RD, ST, AVE
-    // suffix like = E, N, S, W
     String blankSpace = " ";
-    return prefix + blankSpace + name + blankSpace + category + blankSpace + suffix;
+    StringBuilder sb = new StringBuilder();
+    if (prefix != null && !prefix.isBlank())
+      sb.append(prefix).append(blankSpace);
+    if (name != null && !name.isBlank())
+      sb.append(name).append(blankSpace);
+    if (category != null && !category.isBlank())
+      sb.append(category).append(blankSpace);
+    if (suffix != null && !suffix.isBlank())
+      sb.append(suffix);
+    return sb.toString().trim();
   }
 
   /**

@@ -110,10 +110,14 @@ public class GeocodeDialog extends JDialog
     DefaultListModel<String> listModel = (DefaultListModel<String>) resultsArea.getModel();
     listModel.clear();
 
-    String prefix = prefixField.getItemAt(0);
+    
+    String prefix = prefixField.getItemAt(prefixField.getSelectedIndex());
+//    String prefix = prefixField.getItemAt(0);
     String name = nameField.getText();
     String category = categoryField.getItemAt(categoryField.getSelectedIndex());
-    String suffix = suffixField.getItemAt(0);
+//    String suffix = suffixField.getItemAt(0);
+    String suffix = suffixField.getItemAt(suffixField.getSelectedIndex());
+
     int number = 0;
     try
     {
