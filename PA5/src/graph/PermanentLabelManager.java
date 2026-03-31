@@ -2,6 +2,9 @@ package graph;
 
 /**
  * Handles permanent labels in the graph.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1.0
  */
 public interface PermanentLabelManager
 {
