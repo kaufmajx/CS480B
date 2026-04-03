@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public abstract class AbstractShortestPathAlgorithm implements ShortestPathAlgor
    */
   public AbstractShortestPathAlgorithm()
   {
-
+    observers = new ArrayList<StreetSegmentObserver>();
   }
 
   /**
@@ -51,7 +52,7 @@ public abstract class AbstractShortestPathAlgorithm implements ShortestPathAlgor
   @Override
   public void addStreetSegmentObserver(final StreetSegmentObserver observer)
   {
-
+    observers.add(observer);
   }
 
   /**
@@ -63,7 +64,7 @@ public abstract class AbstractShortestPathAlgorithm implements ShortestPathAlgor
   @Override
   public void removeStreetSegmentObserver(final StreetSegmentObserver observer)
   {
-
+    observers.remove(observer);
   }
 
   /**
@@ -75,6 +76,9 @@ public abstract class AbstractShortestPathAlgorithm implements ShortestPathAlgor
   @Override
   public void notifyStreetSegmentObservers(final List<String> segmentIDs)
   {
-
+    for (StreetSegmentObserver o : observers)
+    {
+      o.handleStreetSegments(segmentIDs);
+    }
   }
 }
