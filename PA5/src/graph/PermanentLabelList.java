@@ -30,8 +30,20 @@ public class PermanentLabelList extends AbstractLabelManager implements Permanen
   @Override
   public Label getSmallestLabel()
   {
-    // TODO Auto-generated method stub
-    return null;
+    if (labels.length <= 0)
+    {
+      return null;
+    }
+
+    Label smallestLabel = labels[0];
+    for (Label l : labels)
+    {
+      if (l.getValue() < smallestLabel.getValue())
+      {
+        smallestLabel = l;
+      }
+    }
+    return smallestLabel;
   }
 
   /**
@@ -43,8 +55,13 @@ public class PermanentLabelList extends AbstractLabelManager implements Permanen
   @Override
   public void makePermanent(final int intersectionID)
   {
-    // TODO Auto-generated method stub
-
+    for (Label l : labels)
+    {
+      if (l.getID() == intersectionID)
+      {
+        l.makePermenant();
+      }
+    }
   }
 
   /**
@@ -56,8 +73,7 @@ public class PermanentLabelList extends AbstractLabelManager implements Permanen
   @Override
   public void adjustHeadValue(final StreetSegment segment)
   {
-    // TODO Auto-generated method stub
-
+    
   }
 
 }

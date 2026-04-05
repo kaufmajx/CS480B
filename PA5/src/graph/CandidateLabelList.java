@@ -45,8 +45,18 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
   @Override
   public Label getCandidateLabel()
   {
-    // TODO Auto-generated method stub
-    return null;
+    if (candidates.isEmpty())
+    {
+      return null;
+    }
+    if (policy.equals(OLDEST))
+    {
+      return getLabel(candidates.get(0));
+    }
+    else
+    {
+      return getLabel(candidates.get(candidates.size() - 1));
+    }
   }
 
   /**
@@ -58,7 +68,9 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
   @Override
   public void adjustHeadValue(final StreetSegment segment)
   {
-    // TODO Auto-generated method stub
+    Label headLabel = getLabel(candidates.get(0));
+    // TODO make sure the value passed in is right
+    headLabel.adjustValue(headLabel.getValue(), segment);
   }
 
 }

@@ -2,6 +2,7 @@ package graph;
 
 import java.util.Map;
 
+import feature.Intersection;
 import feature.StreetSegment;
 
 /**
@@ -41,7 +42,39 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
   @Override
   public Map<String, StreetSegment> findPath(final int origin, final int destination, final StreetNetwork net)
   {
-    // TODO Auto-generated method stub
+
+//  When we start out, all of the nodes have temporary status;
+
+  int i = origin;
+  int d = destination;
+  while (i != d) {
+    Intersection inter = net.getIntersection(d);
+//    All nodes j that are reachable from i
+    for (StreetSegment ss : inter.getOutbound()) {
+      
+      if (labels.getSmallerLabel() + d(i,j) < L[j]) {
+
+        L[j] = L[i] + d(i,j);
+        P[j] = i;
+      }
+    }
+
+    double M = Double.POSITIVE_INFINITY;
+
+    for (All nodes j with S[j]==temporary) {
+
+      if (L[j]<M) {
+
+        M = L[j];
+        n = j;
+      }
+    }
+
+
+    S[n] = permanent;
+
+    i =  n;
+  }
     return null;
   }
 }
