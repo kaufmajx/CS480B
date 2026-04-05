@@ -59,7 +59,7 @@ public class PermanentLabelList extends AbstractLabelManager implements Permanen
     {
       if (l.getID() == intersectionID)
       {
-        l.makePermenant();
+        l.makePermanent();
       }
     }
   }
