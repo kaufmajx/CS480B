@@ -20,9 +20,8 @@ public class Label
    */
   public Label()
   {
-    permanent = false;
-    value = Double.POSITIVE_INFINITY; // Current 'shortest path' starts at infintley far away
-    predecessor = null;
+    // Change this to the proper id
+    this(0);
   }
 
   /**
@@ -33,8 +32,10 @@ public class Label
    */
   public Label(final int id)
   {
-    this();
     this.id = id;
+    permanent = false;
+    value = Double.POSITIVE_INFINITY; // Current 'shortest path' starts at infinity far away
+    predecessor = null;
   }
 
   /**
@@ -108,4 +109,5 @@ public class Label
   {
     this.value = value;
   }
+
 }

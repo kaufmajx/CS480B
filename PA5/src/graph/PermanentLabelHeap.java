@@ -1,5 +1,8 @@
 package graph;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
 import feature.StreetSegment;
 
 /**
@@ -12,6 +15,7 @@ import feature.StreetSegment;
 public class PermanentLabelHeap extends AbstractLabelManager implements PermanentLabelManager
 {
   private int d;
+  private PriorityQueue<Label> heap;
 
   /**
    * Creates a permanent label heap.
@@ -25,7 +29,13 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   {
     super(networkSize);
     this.d = d;
-    // TODO Auto-generated constructor stub
+    this.heap = new PriorityQueue<>(Comparator.comparingDouble(Label::getValue));
+
+    // make a new label that is set to infinity
+    for (int i = 0; i < networkSize; i++)
+    {
+      heap.add(labels[i]);
+    }
   }
 
   /**
@@ -36,7 +46,12 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   @Override
   public Label getSmallestLabel()
   {
-    // TODO Auto-generated method stub
+    // Peek until we find one that isn't permanent yet
+    for (Label l : heap)
+    {
+      if (!l.isPermanent())
+        return l;
+    }
     return null;
   }
 
@@ -49,7 +64,7 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   @Override
   public void makePermanent(final int intersectionID)
   {
-    // TODO Auto-generated method stub
+    labels[intersectionID].makePermanent();
   }
 
   /**
@@ -61,6 +76,21 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   @Override
   public void adjustHeadValue(final StreetSegment segment)
   {
-    // TODO Auto-generated method stub
+    int tailID = segment.getTail();
+    int headID = segment.getHead();
+
+    Label tailLabel = labels[tailID];
+    Label headLabel = labels[headID];
+
+    double possibleValue = tailLabel.getValue() + segment.getLength();
+
+    // Label.adjustValue() only updates if possibleValue is an improvement
+    if (!headLabel.isPermanent())
+    {
+      heap.remove(headLabel); // remove before updating (heap must re-sort)
+      headLabel.adjustValue(possibleValue, segment);
+      heap.add(headLabel); // re-add with updated value
+    }
   }
+
 }
