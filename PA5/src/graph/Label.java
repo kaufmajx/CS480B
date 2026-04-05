@@ -20,7 +20,9 @@ public class Label
    */
   public Label()
   {
-
+    permanent = false;
+    value = Double.POSITIVE_INFINITY; // Current 'shortest path' starts at infintley far away
+    predecessor = null;
   }
 
   /**
@@ -31,6 +33,7 @@ public class Label
    */
   public Label(final int id)
   {
+    this();
     this.id = id;
   }
 
@@ -85,7 +88,7 @@ public class Label
    * 
    * @return permanent
    */
-  public boolean isPermenant()
+  public boolean isPermanent()
   {
     return this.permanent;
   }
@@ -93,7 +96,7 @@ public class Label
   /**
    * Setter for permanent.
    */
-  public void makePermenant()
+  public void makePermanent()
   {
     this.permanent = true;
   }
