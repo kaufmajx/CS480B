@@ -6,7 +6,7 @@ package graph;
  * @author Jelal Kaufman & Tenley Kennett
  * @version 1.0
  */
-public interface PermanentLabelManager
+public interface PermanentLabelManager extends LabelManager
 {
   /**
    * Gets the smallest label.

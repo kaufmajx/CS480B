@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import feature.Intersection;
@@ -40,41 +41,42 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
    * @return a map of segment IDs to street segments representing the path
    */
   @Override
-  public Map<String, StreetSegment> findPath(final int origin, final int destination, final StreetNetwork net)
+  public Map<String, StreetSegment> findPath(final int origin, final int destination,
+      final StreetNetwork net)
   {
+    Map<String, StreetSegment> result = new HashMap<>();
+    int i = origin;
+    labels.getLabel(origin).setValue(0.0);
+    labels.makePermanent(origin);
 
-//  When we start out, all of the nodes have temporary status;
+    while (i != destination)
+    {
+      Intersection is = net.getIntersection(i);
+      for (StreetSegment ss : is.getOutbound())
+      {
+        labels.adjustHeadValue(ss);
+      }
+      Label tinyLabel = labels.getSmallestLabel();
+      if (tinyLabel == null)
+        break;
 
-//  int i = origin;
-//  int d = destination;
-//  while (i != d) {
-//    Intersection inter = net.getIntersection(d);
-////    All nodes j that are reachable from i
-//    for (StreetSegment ss : inter.getOutbound()) {
-//      
-//      if (labels.getSmallerLabel() + d(i,j) < L[j]) {
-//
-//        L[j] = L[i] + d(i,j);
-//        P[j] = i;
-//      }
-//    }
-//
-//    double M = Double.POSITIVE_INFINITY;
-//
-//    for (All nodes j with S[j]==temporary) {
-//
-//      if (L[j]<M) {
-//
-//        M = L[j];
-//        n = j;
-//      }
-//    }
-//
-//
-//    S[n] = permanent;
-//
-//    i =  n;
-//  }
-    return null;
+      labels.makePermanent(tinyLabel.getID());
+
+      i = tinyLabel.getID();
+
+    }
+
+    // Reconstruct path by walking predecessors back from destination
+    int current = destination;
+    while (current != origin)
+    {
+      Label currLabel = labels.getLabel(current);
+      StreetSegment pred = currLabel.getPredecessor();
+      if (pred == null)
+        return null;
+      result.put(pred.getID(), pred);
+      current = pred.getTail();
+    }
+    return result;
   }
 }

@@ -1,20 +1,49 @@
 package app;
 
-import geography.*;
-import graph.*;
-import gui.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.io.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.*;
-
-import dataprocessing.Geocoder;
-import feature.*;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 
 import com.formdev.flatlaf.*;
+
+import dataprocessing.Geocoder;
+import feature.Street;
+import feature.StreetSegment;
+import feature.StreetSegmentObserver;
+import feature.StreetsReader;
+import geography.AbstractMapProjection;
+import geography.ConicalEqualAreaProjection;
+import geography.GeographicShape;
+import geography.GeographicShapesReader;
+import graph.LabelSettingAlgorithm;
+import graph.PathFindingWorker;
+import graph.PermanentLabelBuckets;
+import graph.PermanentLabelManager;
+import graph.ShortestPathAlgorithm;
+import graph.StreetNetwork;
+import gui.BackgroundTaskDialog;
+import gui.CartographyDocument;
+import gui.CartographyPanel;
+import gui.GeocodeDialog;
+import gui.StreetSegmentCartographer;
 
 /**
  * The application for PA5.
