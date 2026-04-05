@@ -1,11 +1,14 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import feature.Intersection;
 import feature.Street;
+import feature.StreetSegment;
 
 /**
  * Represents a network of street intersections. Stores and manages a list of intersections.
@@ -67,8 +70,48 @@ public class StreetNetwork
    *          a map of street names to Street objects
    * @return a new StreetNetwork instance
    */
-  public StreetNetwork createStreetNetwork(final Map<String, Street> streets)
+  public static StreetNetwork createStreetNetwork(final Map<String, Street> streets)
   {
-    return null;
+    StreetNetwork streetNetwork = new StreetNetwork();
+    Map<Integer, Intersection> nodeMap = new HashMap<>();
+
+    int index = 0;
+
+    // loop thru streets to build out intersections
+    for (Street street : streets.values())
+    {
+      Iterator<StreetSegment> it = street.getSegments();
+
+      while (it.hasNext())
+      {
+        StreetSegment ss = it.next();
+        if (!nodeMap.containsKey(ss.getTail()))
+          nodeMap.put(ss.getTail(), new Intersection());
+
+        if (!nodeMap.containsKey(ss.getHead()))
+          nodeMap.put(ss.getHead(), new Intersection());
+      }
+
+    }
+    // add each intersection to the streetnetwork
+    for (Map.Entry<Integer, Intersection> entry : nodeMap.entrySet())
+      streetNetwork.addIntersection(entry.getKey(), entry.getValue());
+
+    // link up incoming and outgoing streetsegments
+    for (Street street : streets.values())
+    {
+      Iterator<StreetSegment> it = street.getSegments();
+
+      while (it.hasNext())
+      {
+        StreetSegment ss = it.next();
+        Intersection tail = nodeMap.get(ss.getTail());
+        Intersection head = nodeMap.get(ss.getHead());
+        tail.addOutbound(ss);
+        head.addInbound(ss);
+      }
+
+    }
+    return streetNetwork;
   }
 }
