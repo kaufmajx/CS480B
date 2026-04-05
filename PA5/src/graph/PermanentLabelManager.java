@@ -13,7 +13,7 @@ public interface PermanentLabelManager
    *
    * @return the smallest label
    */
-  public Label getSmallerLabel();
+  public Label getSmallestLabel();
 
   /**
    * Marks a label as permanent.

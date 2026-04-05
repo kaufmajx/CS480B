@@ -28,7 +28,7 @@ public class PermanentLabelList extends AbstractLabelManager implements Permanen
    * @return the smallest label
    */
   @Override
-  public Label getSmallerLabel()
+  public Label getSmallestLabel()
   {
     // TODO Auto-generated method stub
     return null;

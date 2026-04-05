@@ -3,13 +3,12 @@ package graph;
 import feature.StreetSegment;
 
 /**
- * A heap-based implementation of a permanent label manager. Uses a d-ary heap structure to manage
- * labels efficiently.
+ * A heap-based implementation of a permanent label bucket.
  * 
  * @author Jelal Kaufman & Tenley Kennett
  * @version 1.0
  */
-public class PermanentLabelHeap extends AbstractLabelManager implements PermanentLabelManager
+public class PermanentLabelBuckets extends AbstractLabelManager implements PermanentLabelManager
 {
   private int d;
 
@@ -21,10 +20,9 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
    * @param networkSize
    *          the number of nodes in the network
    */
-  public PermanentLabelHeap(final int d, final int networkSize)
+  public PermanentLabelBuckets(final int networkSize)
   {
     super(networkSize);
-    this.d = d;
     // TODO Auto-generated constructor stub
   }
 
