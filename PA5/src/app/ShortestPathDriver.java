@@ -52,12 +52,12 @@ public class ShortestPathDriver
     // TODO CONSTRUCT THE ALGORITHM   --   Use a Label Setting Algorithm
     //PermanentLabelManager labels = new PermanentLabelList(network.size());
 //    PermanentLabelManager labels = new PermanentLabelBuckets(network.size());
-    PermanentLabelManager labels = new PermanentLabelHeap(5, network.size());
-    alg = new LabelSettingAlgorithm(labels);
+//    PermanentLabelManager labels = new PermanentLabelHeap(5, network.size());
+//    alg = new LabelSettingAlgorithm(labels);
     
     // TODO CONSTRUCT THE ALGORITHM   --   Use a LabelCorrecting Algorithm
-    //CandidateLabelManager labels = new CandidateLabelList(CandidateLabelList.NEWEST, network.size()); 
-    //alg = new LabelCorrectingAlgorithm(labels);
+    CandidateLabelManager labels = new CandidateLabelList(CandidateLabelList.NEWEST, network.size()); 
+    alg = new LabelCorrectingAlgorithm(labels);
     
 //    // To show intermediate results
 //    alg.addStreetSegmentObserver(new Observer());

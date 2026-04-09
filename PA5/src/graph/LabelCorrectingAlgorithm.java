@@ -31,8 +31,23 @@ public class LabelCorrectingAlgorithm extends AbstractShortestPathAlgorithm
     ((CandidateLabelList) labels).candidates.add(origin);
 
     // while (There are candidates nodes)
-    while (labels.getCandidateLabel() != null)
+    while (true)
     {
+      // Choose a candidate node and make it the new working node
+      // getCandidateLabel() removes it from candidates and returns it
+      Label next = labels.getCandidateLabel();
+      if (next == null)
+      {
+        break;
+      }
+      workingNode = next.getID();
+
+      if (workingNode == destination)
+      {
+        break;
+      }
+      
+      
       // For all segments reachable from the working node
       for (StreetSegment segment : net.getIntersection(workingNode).getOutbound())
       {
@@ -42,14 +57,19 @@ public class LabelCorrectingAlgorithm extends AbstractShortestPathAlgorithm
       }
       // Choose a candidate node and make it the new working node
       // getCandidateLabel() removes it from candidates and returns it
-      Label next = labels.getCandidateLabel();
-      workingNode = next.getID();
+      // Label next = labels.getCandidateLabel();
+      // if (next == null)
+      // {
+      // break;
+      // }
+      //
+      // workingNode = next.getID();
     }
 
     // Reconstruct the path by following predecessors back from destination to origin
     Map<String, StreetSegment> path = new HashMap<String, StreetSegment>();
     Label current = labels.getLabel(destination);
-    
+
     while (current.getPredecessor() != null)
     {
       StreetSegment seg = current.getPredecessor();
