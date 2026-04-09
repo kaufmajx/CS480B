@@ -12,6 +12,8 @@ import feature.StreetSegment;
  * @author Jelal Kaufman & Tenley Kennett
  * @version 1.0
  */
+
+
 public class PermanentLabelHeap extends AbstractLabelManager implements PermanentLabelManager
 {
   private int d;
@@ -46,11 +48,12 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   @Override
   public Label getSmallestLabel()
   {
-    // Peek until we find one that isn't permanent yet
-    for (Label l : heap)
+    while (!heap.isEmpty())
     {
+      Label l = heap.peek();
       if (!l.isPermanent())
         return l;
+      heap.poll(); // discard permanent labels lazily
     }
     return null;
   }
@@ -78,7 +81,6 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   {
     int tailID = segment.getTail();
     int headID = segment.getHead();
-
     Label tailLabel = labels[tailID];
     Label headLabel = labels[headID];
 

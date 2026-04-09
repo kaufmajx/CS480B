@@ -22,7 +22,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
-import com.formdev.flatlaf.*;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import dataprocessing.Geocoder;
 import feature.Street;
@@ -35,7 +35,7 @@ import geography.GeographicShape;
 import geography.GeographicShapesReader;
 import graph.LabelSettingAlgorithm;
 import graph.PathFindingWorker;
-import graph.PermanentLabelBuckets;
+import graph.PermanentLabelHeap;
 import graph.PermanentLabelManager;
 import graph.ShortestPathAlgorithm;
 import graph.StreetNetwork;
@@ -103,8 +103,8 @@ public class PA5App
     {
       // TODO CONSTRUCT THE ALGORITHM   --   Use a Label Setting Algorithm
       //PermanentLabelManager labels = new PermanentLabelList(network.size());
-      PermanentLabelManager labels = new PermanentLabelBuckets(network.size());
-      //PermanentLabelManager labels = new PermanentLabelHeap(5, network.size());
+//      PermanentLabelManager labels = new PermanentLabelBuckets(network.size());
+      PermanentLabelManager labels = new PermanentLabelHeap(5, network.size());
       alg = new LabelSettingAlgorithm(labels);
       
       // TODO CONSTRUCT THE ALGORITHM   --   Use a LabelCorrecting Algorithm
@@ -184,20 +184,20 @@ public class PA5App
 
       
       // CHOOSE A .geo FILE
-      //InputStream isgeo = new FileInputStream(new File("rockingham-streets-2024.geo"));
+      InputStream isgeo = new FileInputStream(new File("rockingham-streets-2024.geo"));
       //InputStream isgeo = new FileInputStream(new File("rockingham-streets.geo"));
       //InputStream isgeo = new FileInputStream(new File("virginia-streets.geo"));
-      InputStream isgeo = new FileInputStream(new File("va-streets-2024.geo"));
+//      InputStream isgeo = new FileInputStream(new File("va-streets-2024.geo"));
       AbstractMapProjection proj = new ConicalEqualAreaProjection(-96.0, 37.5, 29.5, 45.5);
       GeographicShapesReader gsReader = new GeographicShapesReader(isgeo, proj);
       CartographyDocument<GeographicShape> geographicShapes = gsReader.read();
       System.out.println("Read the .geo file");
 
       // CHOOSE A .str FILE
-      //InputStream iss = new FileInputStream(new File("rockingham-streets-2024.str"));
+      InputStream iss = new FileInputStream(new File("rockingham-streets-2024.str"));
       //InputStream iss = new FileInputStream(new File("rockingham-streets.str"));
       //InputStream iss = new FileInputStream(new File("virginia-streets.str"));
-      InputStream iss = new FileInputStream(new File("va-streets-2024.str"));
+//      InputStream iss = new FileInputStream(new File("va-streets-2024.str"));
       StreetsReader sReader = new StreetsReader(iss, geographicShapes);
       Map<String, Street> streets = new HashMap<String, Street>();
       document = sReader.read(streets);

@@ -1,9 +1,7 @@
 package graph;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import feature.Intersection;
@@ -18,14 +16,14 @@ import feature.StreetSegment;
  */
 public class StreetNetwork
 {
-  private List<Intersection> intersections;
+  private Map<Integer, Intersection> intersections = new HashMap<>();
 
   /**
    * Constructs an empty StreetNetwork.
    */
   public StreetNetwork()
   {
-    this.intersections = new ArrayList<>();
+    this.intersections = new HashMap<>();
   }
 
   /**
@@ -38,7 +36,8 @@ public class StreetNetwork
    */
   public void addIntersection(final int index, final Intersection intersection)
   {
-    this.intersections.add(index, intersection);
+    intersections.put(index, intersection);
+
   }
 
   /**
@@ -75,8 +74,6 @@ public class StreetNetwork
     StreetNetwork streetNetwork = new StreetNetwork();
     Map<Integer, Intersection> nodeMap = new HashMap<>();
 
-    int index = 0;
-
     // loop thru streets to build out intersections
     for (Street street : streets.values())
     {
@@ -95,8 +92,9 @@ public class StreetNetwork
     }
     // add each intersection to the streetnetwork
     for (Map.Entry<Integer, Intersection> entry : nodeMap.entrySet())
+    {
       streetNetwork.addIntersection(entry.getKey(), entry.getValue());
-
+    }
     // link up incoming and outgoing streetsegments
     for (Street street : streets.values())
     {

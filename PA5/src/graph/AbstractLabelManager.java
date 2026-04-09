@@ -12,6 +12,10 @@ public abstract class AbstractLabelManager implements LabelManager
   public AbstractLabelManager(final int networkSize)
   {
     labels = new Label[networkSize];
+    for (int i = 0; i < networkSize; i++)
+    {
+      labels[i] = new Label();
+    }
   }
 
   // Abstract method (must be implemented by subclasses)

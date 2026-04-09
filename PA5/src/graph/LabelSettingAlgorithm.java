@@ -48,9 +48,10 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
     int i = origin;
     labels.getLabel(origin).setValue(0.0);
     labels.makePermanent(origin);
-
+    System.out.print(false);
     while (i != destination)
     {
+      System.out.println(i);
       Intersection is = net.getIntersection(i);
       for (StreetSegment ss : is.getOutbound())
       {
