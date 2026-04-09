@@ -28,7 +28,6 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
   {
     this.labels = labels;
   }
-
   /**
    * Finds the shortest path from an origin to a destination.
    *
@@ -44,14 +43,19 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
   public Map<String, StreetSegment> findPath(final int origin, final int destination,
       final StreetNetwork net)
   {
+    // Set origin value and fix heap ordering
+    labels.getLabel(origin).setValue(0.0);
+    if (labels instanceof PermanentLabelHeap)
+    {
+      ((PermanentLabelHeap) labels).decreaseKey(origin); // sifts up after setValue
+    }
+
+    labels.makePermanent(origin);
+    
     Map<String, StreetSegment> result = new HashMap<>();
     int i = origin;
-    labels.getLabel(origin).setValue(0.0);
-    labels.makePermanent(origin);
-    System.out.print(false);
     while (i != destination)
     {
-      System.out.println(i);
       Intersection is = net.getIntersection(i);
       for (StreetSegment ss : is.getOutbound())
       {

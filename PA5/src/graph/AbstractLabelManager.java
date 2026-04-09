@@ -14,7 +14,7 @@ public abstract class AbstractLabelManager implements LabelManager
     labels = new Label[networkSize];
     for (int i = 0; i < networkSize; i++)
     {
-      labels[i] = new Label();
+      labels[i] = new Label(i); 
     }
   }
 
