@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import feature.StreetSegment;
@@ -18,7 +19,7 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
   public static final String OLDEST = "O";
 
   /** List of candidate intersection IDs. */
-  private List<Integer> candidates;
+  List<Integer> candidates;
 
   /** Selection policy (e.g., newest or oldest). */
   private String policy;
@@ -35,6 +36,7 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
   {
     super(networkSize);
     this.policy = policy;
+    this.candidates = new ArrayList<Integer>();
   }
 
   /**
@@ -51,11 +53,11 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
     }
     if (policy.equals(OLDEST))
     {
-      return getLabel(candidates.get(0));
+      return getLabel(candidates.remove(0));
     }
     else
     {
-      return getLabel(candidates.get(candidates.size() - 1));
+      return getLabel(candidates.remove(candidates.size() - 1));
     }
   }
 
@@ -68,9 +70,15 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
   @Override
   public void adjustHeadValue(final StreetSegment segment)
   {
-    Label headLabel = getLabel(candidates.get(0));
-    // TODO make sure the value passed in is right
-    headLabel.adjustValue(headLabel.getValue(), segment);
+    //
+    double newValue = getLabel(segment.getTail()).getValue() + segment.getLength();
+    Label headLabel = getLabel(segment.getHead()); // get the segment's head
+    double oldValue = headLabel.getValue();
+    headLabel.adjustValue(newValue, segment);
+    if (headLabel.getValue() < oldValue && !candidates.contains(segment.getHead()))
+    {
+      candidates.add(segment.getHead());
+    }
   }
 
 }

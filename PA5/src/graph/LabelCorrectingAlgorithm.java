@@ -1,5 +1,6 @@
 package graph;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import feature.StreetSegment;
@@ -17,37 +18,45 @@ public class LabelCorrectingAlgorithm extends AbstractShortestPathAlgorithm
   public Map<String, StreetSegment> findPath(final int origin, final int destination,
       final StreetNetwork net)
   {
-//    Initialize all labels to infinity;
-//
-//    Initialize the label of the origin to 0;
-//
-//    Make the origin the working node;
-//
-//    while (There are candidates nodes)
-//    {
-//        // Update the temporary labels
-//        for (All nodes that are reachable from the working node)
-//        {
-//
-//          Calculate the distance to this node through the working node;
-//
-//          if (This distance is less than the node's current label)
-//          {
-//
-//            Set the node's label equal to this distance;
-//
-//            Make this node a candidate;
-//
-//            Set the node's predecessor equal to the working node;
-//          }
-//        }
-//
-//       // Make any candidate node the new working node
-//       Choose a candidate node;
-//
-//       Set the working node equal to this node;
-//    }
-    // TODO Auto-generated method stub
-    return null;
+    // Initialize all labels to infinity;
+    // This is done in the AbstractLabelManager constructor.
+
+    // Initialize the label of the origin to 0;
+    labels.getLabel(origin).setValue(0.0);
+
+    // Make the origin the working node;
+    int workingNode = origin;
+
+    // Start the candidate list with the origin
+    ((CandidateLabelList) labels).candidates.add(origin);
+
+    // while (There are candidates nodes)
+    while (labels.getCandidateLabel() != null)
+    {
+      // For all segments reachable from the working node
+      for (StreetSegment segment : net.getIntersection(workingNode).getOutbound())
+      {
+        // Calculate the distance to this node and update if better
+        // Also adds head node to candidates if its value improved
+        labels.adjustHeadValue(segment);
+      }
+      // Choose a candidate node and make it the new working node
+      // getCandidateLabel() removes it from candidates and returns it
+      Label next = labels.getCandidateLabel();
+      workingNode = next.getID();
+    }
+
+    // Reconstruct the path by following predecessors back from destination to origin
+    Map<String, StreetSegment> path = new HashMap<String, StreetSegment>();
+    Label current = labels.getLabel(destination);
+    
+    while (current.getPredecessor() != null)
+    {
+      StreetSegment seg = current.getPredecessor();
+      path.put(seg.getID(), seg);
+      // move to the label at the START of the segment (the tail, unfortunately)
+      current = labels.getLabel(seg.getTail());
+    }
+    return path;
   }
 }
