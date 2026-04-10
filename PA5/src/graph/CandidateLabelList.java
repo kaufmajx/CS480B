@@ -75,10 +75,11 @@ public class CandidateLabelList extends AbstractLabelManager implements Candidat
     Label headLabel = getLabel(segment.getHead()); // get the segment's head
     double oldValue = headLabel.getValue();
     headLabel.adjustValue(newValue, segment);
-    if (headLabel.getValue() < oldValue && !candidates.contains(segment.getHead()))
+    if (headLabel.getValue() < oldValue)
     {
       candidates.add(segment.getHead());
     }
+
   }
 
 }

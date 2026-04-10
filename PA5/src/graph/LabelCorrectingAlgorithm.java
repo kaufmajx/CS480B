@@ -5,10 +5,22 @@ import java.util.Map;
 
 import feature.StreetSegment;
 
+/**
+ * Label correcting algorithm.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1
+ */
 public class LabelCorrectingAlgorithm extends AbstractShortestPathAlgorithm
 {
   private CandidateLabelManager labels;
 
+  /**
+   * Default correcting algorithm.
+   * 
+   * @param labels
+   *          all the current candidate labels
+   */
   public LabelCorrectingAlgorithm(final CandidateLabelManager labels)
   {
     this.labels = labels;
@@ -41,13 +53,11 @@ public class LabelCorrectingAlgorithm extends AbstractShortestPathAlgorithm
         break;
       }
       workingNode = next.getID();
-
-      if (workingNode == destination)
-      {
-        break;
-      }
-      
-      
+      //
+      // if (workingNode == destination)
+      // {
+      // break;
+      // }
       // For all segments reachable from the working node
       for (StreetSegment segment : net.getIntersection(workingNode).getOutbound())
       {
@@ -73,10 +83,12 @@ public class LabelCorrectingAlgorithm extends AbstractShortestPathAlgorithm
     while (current.getPredecessor() != null)
     {
       StreetSegment seg = current.getPredecessor();
+
       path.put(seg.getID(), seg);
       // move to the label at the START of the segment (the tail, unfortunately)
       current = labels.getLabel(seg.getTail());
     }
+
     return path;
   }
 }

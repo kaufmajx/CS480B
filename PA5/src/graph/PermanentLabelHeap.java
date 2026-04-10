@@ -17,6 +17,12 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
   private int[] indexInHeap; // maps intersectionID -> position in heap array
   private int size;
 
+  /**
+   * Default constructor for PermanentLabelHeap.
+   * 
+   * @param d
+   * @param networkSize
+   */
   public PermanentLabelHeap(final int d, final int networkSize)
   {
     super(networkSize);
@@ -41,19 +47,19 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
 
   // --- Index math ---
 
-  private int parentOf(int i)
+  private int parentOf(final int i)
   {
     return (i - 1) / d;
   }
 
-  private int firstChildOf(int i)
+  private int firstChildOf(final int i)
   {
     return d * i + 1;
   }
 
   // --- Core heap operations ---
 
-  private void swap(int i, int j)
+  private void swap(final int i, final int j)
   {
     indexInHeap[heap[i].getID()] = j;
     indexInHeap[heap[j].getID()] = i;
@@ -62,8 +68,9 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
     heap[j] = temp;
   }
 
-  private void siftUp(int i)
+  private void siftUp(final int j)
   {
+    int i = j;
     while (i > 0)
     {
       int parent = parentOf(i);
@@ -72,7 +79,8 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
         swap(i, parent);
         i = parent;
       }
-      else break;
+      else
+        break;
     }
   }
 
@@ -81,9 +89,9 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
     siftUp(indexInHeap[intersectionID]);
   }
 
-  
-  private void siftDown(int i)
+  private void siftDown(final int j)
   {
+    int i = j;
     while (true)
     {
       int smallest = i;
@@ -100,15 +108,9 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
         swap(i, smallest);
         i = smallest;
       }
-      else break;
+      else
+        break;
     }
-  }
-  
-  public void setOrigin(final int intersectionID)
-  {
-    Label originLabel = labels[intersectionID];
-    originLabel.setValue(0.0);
-    siftUp(indexInHeap[intersectionID]); // fixes heap ordering
   }
 
   // --- Interface methods ---
@@ -124,7 +126,8 @@ public class PermanentLabelHeap extends AbstractLabelManager implements Permanen
       // Pop the permanent label off the heap
       swap(0, size - 1);
       size--;
-      if (size > 0) siftDown(0);
+      if (size > 0)
+        siftDown(0);
     }
     return null;
   }

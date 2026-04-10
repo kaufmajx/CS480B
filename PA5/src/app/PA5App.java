@@ -33,10 +33,10 @@ import geography.AbstractMapProjection;
 import geography.ConicalEqualAreaProjection;
 import geography.GeographicShape;
 import geography.GeographicShapesReader;
-import graph.LabelSettingAlgorithm;
+import graph.CandidateLabelList;
+import graph.CandidateLabelManager;
+import graph.LabelCorrectingAlgorithm;
 import graph.PathFindingWorker;
-import graph.PermanentLabelHeap;
-import graph.PermanentLabelManager;
 import graph.ShortestPathAlgorithm;
 import graph.StreetNetwork;
 import gui.BackgroundTaskDialog;
@@ -104,12 +104,12 @@ public class PA5App
       // TODO CONSTRUCT THE ALGORITHM   --   Use a Label Setting Algorithm
       //PermanentLabelManager labels = new PermanentLabelList(network.size());
 //      PermanentLabelManager labels = new PermanentLabelBuckets(network.size());
-      PermanentLabelManager labels = new PermanentLabelHeap(5, network.size());
-      alg = new LabelSettingAlgorithm(labels);
+//      PermanentLabelManager labels = new PermanentLabelHeap(5, network.size());
+//      alg = new LabelSettingAlgorithm(labels);
       
       // TODO CONSTRUCT THE ALGORITHM   --   Use a LabelCorrecting Algorithm
-      //CandidateLabelManager labels = new CandidateLabelList(CandidateLabelList.NEWEST, network.size()); 
-      //alg = new LabelCorrectingAlgorithm(labels);
+      CandidateLabelManager labels = new CandidateLabelList(CandidateLabelList.NEWEST, network.size()); 
+      alg = new LabelCorrectingAlgorithm(labels);
 
       // Construct the SwingWorker
       task = new PathFindingWorker(alg, 

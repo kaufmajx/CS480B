@@ -2,19 +2,28 @@ package graph;
 
 import feature.StreetSegment;
 
+/**
+ * Abstract implementation of LabelManager.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1
+ */
 public abstract class AbstractLabelManager implements LabelManager
 {
 
   // Protected field (accessible in subclasses)
   protected Label[] labels;
 
-  // Constructor
+  /**
+   * Constructor for AbstractLabelManager that initializes the labels and fills it.
+   * @param networkSize number of intersections
+   */
   public AbstractLabelManager(final int networkSize)
   {
     labels = new Label[networkSize];
     for (int i = 0; i < networkSize; i++)
     {
-      labels[i] = new Label(i); 
+      labels[i] = new Label(i);
     }
   }
 

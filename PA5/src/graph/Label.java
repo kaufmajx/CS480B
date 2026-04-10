@@ -104,6 +104,9 @@ public class Label
 
   /**
    * Setter for value.
+   * 
+   * @param value
+   *          the value to assign to the current label
    */
   public void setValue(final double value)
   {
