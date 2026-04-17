@@ -1,7 +1,11 @@
 package gps;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
@@ -17,6 +21,7 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
 {
   private BufferedReader in;
   private String[] sentences;
+  private ArrayList<GPSObserver> observers;
 
   /**
    * Construct a GPSReaderTask.
@@ -26,9 +31,19 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
    * @param sentences
    *          the NMEA sentence types to process (e.g. "$GPGGA", "$GPGSV")
    */
-  public GPSReaderTask(InputStream is, String[] sentences)
+  public GPSReaderTask(InputStream is, String... sentences)
   {
+    try
+    {
+      this.in = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+    }
+    catch (UnsupportedEncodingException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
+    this.sentences = sentences;
   }
 
   /**
@@ -39,6 +54,27 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
    */
   public Void doInBackground()
   {
+
+    while (!isCancelled())
+    {
+      try
+      {
+        String line = in.readLine();
+        if (line != null)
+        {
+          publish(line);
+        }
+        else
+        {
+          break;
+        }
+      }
+      catch (IOException e)
+      {
+        e.printStackTrace();
+        break;
+      }
+    }
     return null;
   }
 
@@ -53,28 +89,35 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
   @Override
   public void process(List<String> lines)
   {
+    for (String line : sentences)
+    {
+      if (lines.contains(line))
+      {
+        notifyGPSObservers(line);
+      }
+    }
 
   }
 
   @Override
   public void addGPSObserver(GPSObserver observer)
   {
-    // TODO Auto-generated method stub
-
+    observers.add(observer);
   }
 
   @Override
   public void notifyGPSObservers(String sentence)
   {
-    // TODO Auto-generated method stub
-
+    for (GPSObserver obs : observers)
+    {
+      obs.handleGPSData(sentence);
+    }
   }
 
   @Override
   public void removeGPSObserver(GPSObserver observer)
   {
-    // TODO Auto-generated method stub
-
+    observers.remove(observer);
   }
 
 }

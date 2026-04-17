@@ -1,15 +1,28 @@
 package app;
 
-import geography.*;
-import gui.*;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import feature.*;
-import gps.*;
+import feature.Street;
+import feature.StreetSegment;
+import feature.StreetsReader;
+import geography.AbstractMapProjection;
+import geography.ConicalEqualAreaProjection;
+import geography.GeographicShape;
+import geography.GeographicShapesReader;
+import gps.GPSReaderTask;
+import gui.CartographyDocument;
+import gui.DynamicCartographyPanel;
+import gui.StreetSegmentCartographer;
 
 /**
  * The application for PA6.
@@ -66,10 +79,10 @@ public class PA6App implements Runnable
       InputStream is = gps.getInputStream();
       
       // Setup the GPSReaderTask
-      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
-      gpsReader.addGPSObserver(this);
-      frame.setVisible(true);
-      gpsReader.execute();
+//      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
+//      gpsReader.addGPSObserver(this);
+//      frame.setVisible(true);
+//      gpsReader.execute();
 
       
       GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");

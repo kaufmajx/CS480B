@@ -1,1 +1,10 @@
+/jSerialComm-2.11.4.jar
+/.gitignore
+/graph/
+/dataprocessing/
+/feature/
+/geography/
+/gui/
+/math/
 /app/
+/gps/

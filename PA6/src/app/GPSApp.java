@@ -1,12 +1,18 @@
 package app;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.io.InputStream;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import com.fazecast.jSerialComm.*;
-import java.io.*;
 
-import gps.*;
+import gps.GPGGASentence;
+import gps.GPSObserver;
+import gps.GPSReaderTask;
 
 /**
  * An application that can be used to test a GPSReaderTask.
