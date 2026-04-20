@@ -14,6 +14,12 @@ import geography.MapProjection;
 import gps.GPGGASentence;
 import gps.GPSObserver;
 
+/**
+ * DynamicCartographyPanel class.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1.0
+ */
 public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements GPSObserver
 {
   private static final long serialVersionUID = 1L;
@@ -21,7 +27,7 @@ public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements G
   private MapProjection proj;
 
   /**
-   * IDK WHAT TO DO HERE.
+   * Constructor for DynamicCartographyPanel.
    * 
    * @param model
    * @param cartographer
@@ -55,28 +61,28 @@ public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements G
   @Override
   public void paint(Graphics g)
   {
-    super.paint(g);
     // No data yet
     if (gpgga == null)
     {
+      super.paint(g);
       return;
     }
 
-    // Ignore invalid fix
-    // if (gpgga.getFixType() == 0)
-    // {
-    // return;
-    // }
-
-    System.out.println("Not Null");
-
     double currLat = gpgga.getLatitude();
     double currLng = gpgga.getLongitude();
-    System.out.println(currLat + ", " + currLng);
+    
+    if(currLat == 0.0 || currLng == 0.0) {
+      super.paint(g);
+      return;
+    }
     double[] km = proj.forward(new double[] {currLng, currLat});
 
-    Graphics2D g2 = (Graphics2D) g;
+    Rectangle2D.Double mapBounds = new Rectangle2D.Double(km[0] - 1.0, km[1] - 1.0, 2.0, 2.0);
+    zoomStack.set(0, mapBounds);
 
+    super.paint(g);
+
+    Graphics2D g2 = (Graphics2D) g;
     Rectangle screenBounds = g2.getClipBounds();
     AffineTransform at = displayTransform.getTransform(screenBounds, zoomStack.getFirst());
 
@@ -84,7 +90,7 @@ public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements G
     at.transform(new Point2D.Double(km[0], km[1]), transCoords);
 
     g2.setColor(Color.RED);
-    g2.fill(new Ellipse2D.Double((int) transCoords.getX() - 4, (int) transCoords.getY() - 4, 8, 8));
+    g2.fill(new Ellipse2D.Double(transCoords.getX() - 4, transCoords.getY() - 4, 8, 8));
   }
 
 }
