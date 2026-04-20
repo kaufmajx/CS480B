@@ -44,6 +44,7 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
     }
 
     this.sentences = sentences;
+    this.observers = new ArrayList<>();
   }
 
   /**
@@ -89,14 +90,17 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
   @Override
   public void process(List<String> lines)
   {
-    for (String line : sentences)
+    for (String line : lines)
     {
-      if (lines.contains(line))
+      for (String sentenceType : sentences)
       {
-        notifyGPSObservers(line);
+        if (line.startsWith(sentenceType))
+        {
+          notifyGPSObservers(line);
+          break;
+        }
       }
     }
-
   }
 
   @Override

@@ -1,10 +1,12 @@
 package feature;
 
-import geography.ThemeLibrary;
-import geography.Theme;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.awt.*;
-import java.util.*;
+import geography.Theme;
+import geography.ThemeLibrary;
 
 /**
  * A ThemeLibrary for use with Street objects.

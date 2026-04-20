@@ -1,7 +1,8 @@
 package app;
 
 import java.lang.reflect.InvocationTargetException;
-import javax.swing.*;
+
+import javax.swing.SwingUtilities;
 
 /**
  * The main class for PA5.

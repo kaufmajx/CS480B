@@ -1,13 +1,15 @@
 package graph;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import javax.swing.*;
+
+import javax.swing.SwingWorker;
 
 import feature.StreetSegment;
 import feature.StreetSegmentObserver;
-import gui.*;
+import gui.CartographyDocument;
+import gui.CartographyPanel;
 
 /**
  * A SwingWorker that uses a path finding algorithm to find a shortest path in

@@ -8,11 +8,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.fazecast.jSerialComm.*;
+import com.fazecast.jSerialComm.SerialPort;
 
 import gps.GPGGASentence;
 import gps.GPSObserver;
 import gps.GPSReaderTask;
+import gps.GPSSimulator;
 
 /**
  * An application that can be used to test a GPSReaderTask.
@@ -73,9 +74,11 @@ public class GPSApp implements GPSObserver, Runnable
     }
   
     // Setup the serial port
-    SerialPort gps = SerialPort.getCommPort(gpsPath); 
-    gps.openPort();
-    gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+//    SerialPort gps = SerialPort.getCommPort(gpsPath); 
+//    gps.openPort();
+//    gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+//    InputStream is = gps.getInputStream();
+    GPSSimulator gps = new GPSSimulator("rockingham.gps");
     InputStream is = gps.getInputStream();
     
     // Setup the GPSReaderTask

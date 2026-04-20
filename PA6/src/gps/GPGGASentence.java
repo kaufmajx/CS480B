@@ -171,33 +171,77 @@ public class GPGGASentence extends NMEASentence
    */
   public static GPGGASentence parseGPGGA(String s)
   {
-    String stripped = s.contains("*") ? s.substring(0, s.indexOf("*")) : s;
-    String[] fields = stripped.split(",");
+   
+    // Split checksum
+    String[] parts = s.split("\\*");
+    String data = parts[0]; // everything before *
+    String checksumStr = parts.length > 1 ? parts[1] : "0";
 
-    String time = fields[1];
-    double lat = convertLatitude(fields[2]);
-    if (fields[3].equals("S"))
+    // OPTIONAL: validate checksum
+    try
     {
-      lat *= -1;
+      int expected = Integer.parseInt(checksumStr, 16);
+      int actual = 0;
+
+      // Skip the '$' when computing checksum
+      actual = NMEASentence.addToChecksum(data.substring(1), 0);
+
+      if (actual != expected)
+      {
+        // Bad checksum → ignore sentence
+        return null;
+      }
     }
-    double longitude = convertLongitude(fields[4]);
-    if (fields[5].equals("W"))
+    catch (Exception e)
     {
-      longitude *= -1;
+      return null; // bad checksum format
     }
 
-    int fixType = Integer.parseInt(fields[6]);
-    int satellites = Integer.parseInt(fields[7]);
-    double dilution = Double.parseDouble(fields[8]);
-    double altitude = Double.parseDouble(fields[9]);
-    String altitudeUnits = fields[10];
-    double seaLevel = Double.parseDouble(fields[11]);
-    String geoidUnits = fields[12];
+    // Split fields (keep empty ones!)
+    String[] f = data.split(",", -1);
 
-    GPGGASentence g = new GPGGASentence(time, lat, longitude, fixType, satellites, dilution,
-        altitude, altitudeUnits, seaLevel, geoidUnits);
-    return g;
+    if (f.length < 15)
+    {
+      return null;
+    }
 
+    // Safe parsing helpers
+    java.util.function.Function<String, Double> d = str -> str.isEmpty() ? 0.0
+        : Double.parseDouble(str);
+
+    java.util.function.Function<String, Integer> i = str -> str.isEmpty() ? 0
+        : Integer.parseInt(str);
+
+    try
+    {
+      String time = f[1].isEmpty() ? "0" : f[1];
+
+      double lat = f[2].isEmpty() ? 0 : NMEASentence.convertLatitude(f[2]);
+      if ("S".equals(f[3]))
+        lat *= -1;
+
+      double lon = f[4].isEmpty() ? 0 : NMEASentence.convertLongitude(f[4]);
+      if ("W".equals(f[5]))
+        lon *= -1;
+
+      int fixType = i.apply(f[6]);
+      int satellites = i.apply(f[7]);
+      double hdop = d.apply(f[8]);
+      double altitude = d.apply(f[9]);
+      String altitudeUnits = f[10].isEmpty() ? "0" : f[10];
+      double geoidSep = d.apply(f[11]);
+      String geoidUnits = f[12].isEmpty() ? "0" : f[12];
+
+      // Ignored but safely parsed
+      double dgpsAge = d.apply(f[13]);
+      int dgpsStation = i.apply(f[14]);
+
+      return new GPGGASentence(time, lat, lon, fixType, satellites, hdop, altitude, altitudeUnits,
+          geoidSep, geoidUnits);
+    }
+    catch (Exception e)
+    {
+      return null;
+    }
   }
-
 }

@@ -20,6 +20,7 @@ import geography.ConicalEqualAreaProjection;
 import geography.GeographicShape;
 import geography.GeographicShapesReader;
 import gps.GPSReaderTask;
+import gps.GPSSimulator;
 import gui.CartographyDocument;
 import gui.DynamicCartographyPanel;
 import gui.StreetSegmentCartographer;
@@ -73,11 +74,14 @@ public class PA6App implements Runnable
       }
     
       // Setup the serial port
-      SerialPort gps = SerialPort.getCommPort(gpsPath); 
-      gps.openPort();
-      gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-      InputStream is = gps.getInputStream();
+//      SerialPort gps = SerialPort.getCommPort(gpsPath); 
+//      gps.openPort();
+//      gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+//      InputStream is = gps.getInputStream();
       
+      GPSSimulator gps = new GPSSimulator("rockingham.gps");
+      InputStream is = gps.getInputStream();
+
       // Setup the GPSReaderTask
 //      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
 //      gpsReader.addGPSObserver(this);
@@ -85,7 +89,7 @@ public class PA6App implements Runnable
 //      gpsReader.execute();
 
       
-      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
+      GPSReaderTask gpsReader = new GPSReaderTask(is, "$GPGGA");
       gpsReader.addGPSObserver(panel);
       frame.setVisible(true);
       gpsReader.execute();
