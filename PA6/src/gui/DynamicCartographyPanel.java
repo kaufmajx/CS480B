@@ -3,7 +3,6 @@ package gui;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
@@ -19,6 +18,9 @@ import gps.GPSObserver;
  * 
  * @author Jelal Kaufman & Tenley Kennett
  * @version 1.0
+ * 
+ * @param <T>
+ *          StreetSegmentCartographer
  */
 public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements GPSObserver
 {
@@ -28,20 +30,23 @@ public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements G
 
   /**
    * Constructor for DynamicCartographyPanel.
-   * 
+   *
    * @param model
+   *          the cartography document model containing the map data
    * @param cartographer
+   *          the cartographer responsible for rendering map elements
    * @param proj
+   *          the map projection used to convert geographic coordinates to screen coordinates
    */
-  public DynamicCartographyPanel(CartographyDocument<T> model, Cartographer<T> cartographer,
-      MapProjection proj)
+  public DynamicCartographyPanel(final CartographyDocument<T> model,
+      final Cartographer<T> cartographer, final MapProjection proj)
   {
     super(model, cartographer);
     this.proj = proj;
   }
 
   @Override
-  public void handleGPSData(String sentence)
+  public void handleGPSData(final String sentence)
   {
     GPGGASentence parsed = GPGGASentence.parseGPGGA(sentence);
 
@@ -59,7 +64,7 @@ public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements G
    *          graphics
    */
   @Override
-  public void paint(Graphics g)
+  public void paint(final Graphics g)
   {
     // No data yet
     if (gpgga == null)
@@ -70,8 +75,9 @@ public class DynamicCartographyPanel<T> extends CartographyPanel<T> implements G
 
     double currLat = gpgga.getLatitude();
     double currLng = gpgga.getLongitude();
-    
-    if(currLat == 0.0 || currLng == 0.0) {
+
+    if (currLat == 0.0 || currLng == 0.0)
+    {
       super.paint(g);
       return;
     }

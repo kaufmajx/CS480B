@@ -28,7 +28,7 @@ public class GPGGASentence extends NMEASentence
    *          dddmm.mmmm
    * @param longitude
    *          ddmm.mmmm
-   * @param fixtype
+   * @param fixType
    *          0 = no fix, 1 = GPS, 2 = DGPS
    * @param satellites
    *          number of satellites
@@ -167,79 +167,65 @@ public class GPGGASentence extends NMEASentence
    * ex. $GPGGA,210230,3855.4487,N,09446.0071,W,1,07,1.1,370.5,M,-29.5,M,,*7A
    * 
    * @param s
-   * @return
+   *          the GPGGA sentence
+   * @return returns a newly constructed GPGGASentence based on the String s
    */
-  public static GPGGASentence parseGPGGA(String s)
+  public static GPGGASentence parseGPGGA(final String s)
   {
-   
-    // Split checksum
-    String[] parts = s.split("\\*");
-    String data = parts[0]; // everything before *
-    String checksumStr = parts.length > 1 ? parts[1] : "0";
+    String zeroCharacter = "0";
 
-    // OPTIONAL: validate checksum
+    // Split on '*' to separate data and checksum
+    String[] parts = s.split("\\*", 2);
+    String data = parts[0];
+    String checksumStr = parts.length > 1 ? parts[1] : zeroCharacter;
+
+    // Validate checksum (skip leading '$')
     try
     {
       int expected = Integer.parseInt(checksumStr, 16);
-      int actual = 0;
-
-      // Skip the '$' when computing checksum
-      actual = NMEASentence.addToChecksum(data.substring(1), 0);
-
+      int actual = NMEASentence.addToChecksum(data.substring(1), 0);
       if (actual != expected)
       {
-        // Bad checksum → ignore sentence
-        return null;
+        throw new IndexOutOfBoundsException();
       }
     }
-    catch (Exception e)
-    {
-      return null; // bad checksum format
-    }
-
-    // Split fields (keep empty ones!)
-    String[] f = data.split(",", -1);
-
-    if (f.length < 15)
+    catch (IndexOutOfBoundsException e)
     {
       return null;
     }
 
-    // Safe parsing helpers
-    java.util.function.Function<String, Double> d = str -> str.isEmpty() ? 0.0
-        : Double.parseDouble(str);
-
-    java.util.function.Function<String, Integer> i = str -> str.isEmpty() ? 0
-        : Integer.parseInt(str);
-
+    // Split fields, preserving empty ones
+    String[] f = data.split(",", -1);
+    if (f.length < 15)
+    {
+      return null;
+    }
     try
     {
-      String time = f[1].isEmpty() ? "0" : f[1];
+      String time = f[1].isEmpty() ? zeroCharacter : f[1];
 
       double lat = f[2].isEmpty() ? 0 : NMEASentence.convertLatitude(f[2]);
+
       if ("S".equals(f[3]))
+      {
         lat *= -1;
+      }
 
       double lon = f[4].isEmpty() ? 0 : NMEASentence.convertLongitude(f[4]);
+
       if ("W".equals(f[5]))
+      {
         lon *= -1;
+      }
 
-      int fixType = i.apply(f[6]);
-      int satellites = i.apply(f[7]);
-      double hdop = d.apply(f[8]);
-      double altitude = d.apply(f[9]);
-      String altitudeUnits = f[10].isEmpty() ? "0" : f[10];
-      double geoidSep = d.apply(f[11]);
-      String geoidUnits = f[12].isEmpty() ? "0" : f[12];
-
-      // Ignored but safely parsed
-      double dgpsAge = d.apply(f[13]);
-      int dgpsStation = i.apply(f[14]);
-
-      return new GPGGASentence(time, lat, lon, fixType, satellites, hdop, altitude, altitudeUnits,
-          geoidSep, geoidUnits);
+      return new GPGGASentence(time, lat, lon, f[6].isEmpty() ? 0 : Integer.parseInt(f[6]),
+          f[7].isEmpty() ? 0 : Integer.parseInt(f[7]),
+          f[8].isEmpty() ? 0.0 : Double.parseDouble(f[8]),
+          f[9].isEmpty() ? 0.0 : Double.parseDouble(f[9]), f[10].isEmpty() ? zeroCharacter : f[10],
+          f[11].isEmpty() ? 0.0 : Double.parseDouble(f[11]),
+          f[12].isEmpty() ? zeroCharacter : f[12]);
     }
-    catch (Exception e)
+    catch (IndexOutOfBoundsException e)
     {
       return null;
     }

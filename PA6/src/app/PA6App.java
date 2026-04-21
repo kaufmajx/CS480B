@@ -89,7 +89,7 @@ public class PA6App implements Runnable
 //      gpsReader.execute();
 
       
-      GPSReaderTask gpsReader = new GPSReaderTask(is, "$GPGGA");
+      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
       gpsReader.addGPSObserver(panel);
       frame.setVisible(true);
       gpsReader.execute();

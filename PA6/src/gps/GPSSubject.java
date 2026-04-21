@@ -1,6 +1,11 @@
 package gps;
 
-//TBI
+/**
+ * GPSSubject interface.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1.0
+ */
 public interface GPSSubject
 {
   /**
@@ -9,7 +14,7 @@ public interface GPSSubject
    * @param observer
    *          the observer to add
    */
-  public void addGPSObserver(GPSObserver observer);
+  public void addGPSObserver(final GPSObserver observer);
 
   /**
    * Notify all registered GPSObserver objects of an incoming NMEA sentence.
@@ -17,7 +22,7 @@ public interface GPSSubject
    * @param sentence
    *          the raw NMEA sentence string
    */
-  public void notifyGPSObservers(String sentence);
+  public void notifyGPSObservers(final String sentence);
 
   /**
    * Remove a GPSObserver so it no longer receives NMEA sentence notifications.
@@ -25,6 +30,6 @@ public interface GPSSubject
    * @param observer
    *          the observer to remove
    */
-  public void removeGPSObserver(GPSObserver observer);
+  public void removeGPSObserver(final GPSObserver observer);
 
 }

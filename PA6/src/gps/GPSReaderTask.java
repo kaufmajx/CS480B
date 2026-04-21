@@ -31,7 +31,7 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
    * @param sentences
    *          the NMEA sentence types to process (e.g. "$GPGGA", "$GPGSV")
    */
-  public GPSReaderTask(InputStream is, String... sentences)
+  public GPSReaderTask(final InputStream is, final String... sentences)
   {
     try
     {
@@ -51,7 +51,7 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
    * Continuously reads lines from the BufferedReader that decorates the InputStream and publishes
    * each line for processing. Runs until the task is cancelled.
    * 
-   * @return
+   * @return Void frankly, I'm not too sure what this is
    */
   public Void doInBackground()
   {
@@ -88,13 +88,13 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
    *          the list of NMEA sentence strings to process
    */
   @Override
-  public void process(List<String> lines)
+  public void process(final List<String> lines)
   {
     for (String line : lines)
     {
       for (String sentenceType : sentences)
       {
-        if (line.startsWith(sentenceType))
+        if (line.replace("$", "").startsWith(sentenceType))
         {
           notifyGPSObservers(line);
           break;
@@ -104,13 +104,13 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
   }
 
   @Override
-  public void addGPSObserver(GPSObserver observer)
+  public void addGPSObserver(final GPSObserver observer)
   {
     observers.add(observer);
   }
 
   @Override
-  public void notifyGPSObservers(String sentence)
+  public void notifyGPSObservers(final String sentence)
   {
     for (GPSObserver obs : observers)
     {
@@ -119,7 +119,7 @@ public class GPSReaderTask extends SwingWorker<Void, String> implements GPSSubje
   }
 
   @Override
-  public void removeGPSObserver(GPSObserver observer)
+  public void removeGPSObserver(final GPSObserver observer)
   {
     observers.remove(observer);
   }
