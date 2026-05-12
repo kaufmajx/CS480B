@@ -165,10 +165,34 @@ public class FinalApp
       dialog.addStreetSegmentObserver(this);
 
       /* GPS */
+      // Find the right serial port
+      // SerialPort[] ports = SerialPort.getCommPorts();
+      // String gpsPath = null;
+      // for (SerialPort port : ports)
+      // {
+      // String description = port.getPortDescription();
+      // String path = port.getSystemPortPath();
+      // if (description.indexOf("GPS") >= 0)
+      // gpsPath = path;
+      // }
+      //
+      // // Setup the serial port
+      // SerialPort gps = SerialPort.getCommPort(gpsPath);
+      // gps.openPort();
+      // gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+      // InputStream is = gps.getInputStream();
+      //
+      //
+      // // Setup the GPSReaderTask
+      // GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
+      // gpsReader.addGPSObserver(this);
+      // frame.setVisible(true);
+      // gpsReader.execute();
 
       GPSSimulator gps = new GPSSimulator("rockingham.gps");
+      InputStream is = gps.getInputStream();
 
-      GPSReaderTask gpsReader = new GPSReaderTask(gps.getInputStream(), "GPGGA");
+      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
 
       gpsReader.addGPSObserver(this);
 
@@ -185,7 +209,7 @@ public class FinalApp
   /* GPS */
 
   @Override
-  public void handleGPSData(String sentence)
+  public void handleGPSData(final String sentence)
   {
     GPGGASentence gpgga = GPGGASentence.parseGPGGA(sentence);
 
@@ -195,11 +219,13 @@ public class FinalApp
     double lon = gpgga.getLongitude();
     double lat = gpgga.getLatitude();
 
+    System.out.printf("Pre-matched: lat=%.2f long=%.2f\n", lat, lon);
+
     if (matcher.match(lon, lat))
     {
       currentGPSSegment = matcher.matchedSegment;
       checkForReroute();
-      String snapped = GPGGASentence.buildGPGGA(matcher.matchedLat, matcher.matchedLon);
+      String snapped = GPGGASentence.buildGPGGA(matcher.matchedLon, matcher.matchedLat);
 
       panel.handleGPSData(snapped);
     }
@@ -213,7 +239,9 @@ public class FinalApp
   {
     if (destinationSegment == null || currentGPSSegment == null || currentRoute.isEmpty()
         || reroutePending)
+    {
       return;
+    }
 
     if (currentRoute.containsKey(currentGPSSegment.getID()))
     {
@@ -226,6 +254,8 @@ public class FinalApp
     if (offRouteFixes >= OFF_ROUTE_FIX_LIMIT)
     {
       offRouteFixes = 0;
+      System.out.printf("REROUTE from node %d to node %d%n", currentGPSSegment.getHead(),
+          destinationSegment.getHead());
       startRouteCalculation(currentGPSSegment.getHead(), destinationSegment.getHead(),
           currentGPSSegment, false);
     }
@@ -255,24 +285,8 @@ public class FinalApp
 
     if (ac.equals(CALCULATE))
     {
-      // CandidateLabelManager labels = new CandidateLabelList(CandidateLabelList.NEWEST,
-      // network.size());
-      //
-      // alg = new LabelCorrectingAlgorithm(labels);
-      //
-      // task = new PathFindingWorker(alg, originSegment.getHead(), destinationSegment.getHead(),
-      // network, document, panel);
-      //
-      // task.addPropertyChangeListener(this);
-      //
-      // BackgroundTaskDialog<Map<String, StreetSegment>, String> btd = new BackgroundTaskDialog<>(
-      // frame, "Calculating...", task);
-      //
-      // btd.execute();
-
       startRouteCalculation(originSegment.getHead(), destinationSegment.getHead(), originSegment,
           true);
-
     }
 
     if (ac.equals(EXIT))
@@ -281,10 +295,8 @@ public class FinalApp
     }
   }
 
-  /* PATH RESULT */
-
   @Override
-  public void propertyChange(PropertyChangeEvent evt)
+  public void propertyChange(final PropertyChangeEvent evt)
   {
     if (evt.getPropertyName().equals("state")
         && evt.getNewValue().equals(SwingWorker.StateValue.DONE))
@@ -316,10 +328,11 @@ public class FinalApp
     }
   }
 
-  /* GEOCODER RESULT */
-
+  /**
+   * Geocoder
+   */
   @Override
-  public void handleStreetSegments(List<String> segmentIDs)
+  public void handleStreetSegments(final List<String> segmentIDs)
   {
     HashMap<String, StreetSegment> highlighted = new HashMap<>();
 
@@ -349,7 +362,9 @@ public class FinalApp
       final StreetSegment startSegment, final boolean showDialog)
   {
     if (reroutePending)
+    {
       return;
+    }
 
     reroutePending = true;
     routeStartSegment = startSegment;
@@ -359,10 +374,13 @@ public class FinalApp
     task.addPropertyChangeListener(this);
 
     if (showDialog)
+    {
       new BackgroundTaskDialog<Map<String, StreetSegment>, String>(frame, "Calculating...", task)
           .execute();
+    }
     else
+    {
       task.execute();
+    }
   }
-
 }
