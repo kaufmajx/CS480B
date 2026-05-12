@@ -77,6 +77,7 @@ public class FinalApp
   private StreetSegment currentGPSSegment;
 
   private MapMatcher matcher;
+  private Map<String, Street> streets;
 
   private int mode;
 
@@ -99,13 +100,17 @@ public class FinalApp
 
       StreetsReader sReader = new StreetsReader(iss, geographicShapes);
 
-      Map<String, Street> streets = new HashMap<>();
+      streets = new HashMap<String, Street>();
+
+      // TEMP: find where the GPS area projects to, and where the streets actually are
+      double[] gpsKm = proj.forward(new double[] {-78.868, 38.442});
+      System.out.printf("GPS area in km:       %.4f, %.4f%n", gpsKm[0], gpsKm[1]);
 
       document = sReader.read(streets);
 
-      network = StreetNetwork.createStreetNetwork(streets);
-
       matcher = new MapMatcher(streets, proj);
+
+      network = StreetNetwork.createStreetNetwork(streets);
 
       /* PANEL */
 
@@ -188,25 +193,37 @@ public class FinalApp
   public void handleGPSData(String sentence)
   {
     GPGGASentence gpgga = GPGGASentence.parseGPGGA(sentence);
-
     if (gpgga == null)
+    {
       return;
+    }
 
     double lon = gpgga.getLongitude();
     double lat = gpgga.getLatitude();
 
+    if (lon == 0 && lat == 0)
+    {
+      return; // nothing happening yet
+    }
+
+    System.out.println("Lat " + lat);
+    System.out.println("Lon " + lon);
+
     if (matcher.match(lon, lat))
     {
-      currentGPSSegment = matcher.matchedSegment;
-      checkForReroute();
       String snapped = GPGGASentence.buildGPGGA(matcher.matchedLat, matcher.matchedLon);
-
       panel.handleGPSData(snapped);
+      System.out.println("MatchedLon " + matcher.matchedLon);
+      System.out.println("MatchedLat " + matcher.matchedLat);
+      // System.out.printf("Matched arc %s residual=%.1f m%n", matcher.matchedSegment.getID(),
+      // matcher.matchedDist * 111000);
     }
     else
     {
       panel.handleGPSData(sentence);
+      System.out.println("No match — using raw GPS");
     }
+
   }
 
   private void checkForReroute()

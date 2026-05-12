@@ -15,12 +15,15 @@ public class MapMatcher
 {
 
   // how far a segment can be in degrees before it's ignored
-  private static final double MAX_CORRECTION_DIST = 0.5; // in km
+  private static final double MAX_CORRECTION_DIST = 0.035; // in km
 
   private final List<StreetSegment> segments;
   private final AbstractMapProjection proj; // ADD
 
   // previous fix (for bearing)
+  private static final int BEARING_HISTORY = 5;
+  private final List<double[]> recentFixes = new ArrayList<>();
+
   private double prevLat = Double.NaN;
   private double prevLon = Double.NaN;
 
@@ -63,17 +66,15 @@ public class MapMatcher
     // TEMP: print the projected GPS point so we can compare to vertices
     System.out.printf("GPS in km: %.4f, %.4f%n", kmLon, kmLat);
 
-    Double bearing = travelBearing(kmLon, kmLat);
-    prevLon = lon;
-    prevLat = lat;
+    Double bearing = travelBearing(kmLon, kmLat); // handles its own history
+    // prevLon = lon;
+    // prevLat = lat;
 
     // reset results
     matchedSegment = null;
     matchedLon = lon; // keep these in degrees — panel expects degrees
     matchedLat = lat;
     matchedDist = Double.MAX_VALUE;
-
-    double globalBest = Double.MAX_VALUE; // TEMP
 
     for (StreetSegment seg : segments)
     {
@@ -85,28 +86,20 @@ public class MapMatcher
 
       double[] closest = closestPoint(kmLon, kmLat, pts); // compare km to km
 
-      if (closest[2] < globalBest)
-        globalBest = closest[2]; // TEMP
-
       if (closest[2] > MAX_CORRECTION_DIST)
         continue;
 
-      // if (bearing != null)
-      // {
-      // double arcBearing = bearing(pts, (int) closest[3]); // closest[3] = distance from GPS to F
-      // double diff = Math.min(angularDiff(bearing, arcBearing),
-      // angularDiff(bearing, (arcBearing + 180) % 360));
-      //
-      // if (diff > 45.0)
-      // continue;
-      // }
-      if (bearing != null && closest[2] > 0.010) // only heading-filter if not already very close
+      if (bearing != null) // only heading-filter if not already very close
       {
         double arcBearing = bearing(pts, (int) closest[3]); // closest[3] = distance from GPS to F
         double diff = Math.min(angularDiff(bearing, arcBearing),
             angularDiff(bearing, (arcBearing + 180) % 360));
 
-        if (diff > 90.0)
+//        // # TEMP
+//        System.out.printf("  seg %s  travelBearing=%.1f  arcBearing=%.1f  diff=%.1f%n", seg.getID(),
+//            bearing, arcBearing, diff);
+
+        if (diff > 45.0)
           continue;
       }
 
@@ -119,15 +112,10 @@ public class MapMatcher
         double[] deg = proj.inverse(new double[] {closest[0], closest[1]});
         matchedLon = deg[0];
         matchedLat = deg[1];
-        System.out.println("MatchedLon " + matchedLon);
-        System.out.println("MatchedLat " + matchedLat);
+
       }
 
     }
-
-    // TEMP: print closest distance found across all segments
-    System.out.printf("Closest segment dist: %.4f km (threshold: %.4f)%n", globalBest,
-        MAX_CORRECTION_DIST);
 
     return matchedSegment != null;
   }
@@ -213,7 +201,7 @@ public class MapMatcher
       {
         bestDist = dist;
         // store: the foot point, distance, and sub-seg index
-        best = new double[] {fx, fy, dist, i};
+        best = new double[] {fx, fy, dist, i, t};
       }
     }
     return best;
@@ -228,7 +216,7 @@ public class MapMatcher
    */
   private double bearing(List<double[]> pts, int i)
   {
-    double dLon = (pts.get(i + 1)[0] - pts.get(i)[0]) * Math.cos(Math.toRadians(pts.get(i)[1]));
+    double dLon = pts.get(i + 1)[0] - pts.get(i)[0]; // remove cos-correction
     double dLat = pts.get(i + 1)[1] - pts.get(i)[1];
     return (Math.toDegrees(Math.atan2(dLon, dLat)) + 360) % 360;
   }
@@ -254,13 +242,25 @@ public class MapMatcher
    */
   private Double travelBearing(double kmLon, double kmLat)
   {
-    if (Double.isNaN(prevLon))
-      return null;
+    // if (Double.isNaN(prevLon))
+    // return null;
+    recentFixes.add(new double[] {kmLon, kmLat});
 
-    // double dLon = (lon - prevLon) * Math.cos(Math.toRadians(prevLat));
-    // double dLat = lat - prevLat;
-    double dLon = kmLon - prevLon;
-    double dLat = kmLat - prevLat;
+    if (recentFixes.size() > BEARING_HISTORY)
+    {
+      recentFixes.remove(0);
+    }
+
+    if (recentFixes.size() < 2)
+    {
+      return null; // need at least 2 fixes to derive a bearing
+    }
+
+    double[] oldest = recentFixes.get(0);
+    double[] newest = recentFixes.get(recentFixes.size() - 1);
+
+    double dLon = newest[0] - oldest[0];
+    double dLat = newest[1] - oldest[1];
     double dist = Math.sqrt(dLon * dLon + dLat * dLat);
 
     // If we've barely moved, don't trust the bearing at all

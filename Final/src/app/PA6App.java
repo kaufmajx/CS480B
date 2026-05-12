@@ -57,7 +57,7 @@ public class PA6App implements Runnable, GPSObserver
 
       InputStream iss = new FileInputStream(new File("rockingham-streets.str"));
       StreetsReader sReader = new StreetsReader(iss, geographicShapes);
-      // Map<String, Street> streets = new HashMap<String, Street>();
+
       streets = new HashMap<String, Street>();
       
    // TEMP: find where the GPS area projects to, and where the streets actually are
@@ -140,8 +140,10 @@ public class PA6App implements Runnable, GPSObserver
     {
       String snapped = GPGGASentence.buildGPGGA(matcher.matchedLat, matcher.matchedLon);
       panel.handleGPSData(snapped);
-      System.out.printf("Matched arc %s  residual=%.1f m%n", matcher.matchedSegment.getID(),
-          matcher.matchedDist * 111000);
+      System.out.println("MatchedLon " + matcher.matchedLon);
+      System.out.println("MatchedLat " + matcher.matchedLat);
+//      System.out.printf("Matched arc %s  residual=%.1f m%n", matcher.matchedSegment.getID(),
+//          matcher.matchedDist * 111000);
     }
     else
     {
