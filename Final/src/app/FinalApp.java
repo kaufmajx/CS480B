@@ -219,13 +219,13 @@ public class FinalApp
     double lon = gpgga.getLongitude();
     double lat = gpgga.getLatitude();
 
-    System.out.printf("Pre-matched: lat=%.2f long=%.2f\n", lat, lon);
+    System.out.printf("Pre-matched: long=%.2f lat=%.2f\n", lon, lat);
 
     if (matcher.match(lon, lat))
     {
       currentGPSSegment = matcher.matchedSegment;
       checkForReroute();
-      String snapped = GPGGASentence.buildGPGGA(matcher.matchedLon, matcher.matchedLat);
+      String snapped = GPGGASentence.buildGPGGA(matcher.matchedLat, matcher.matchedLon);
 
       panel.handleGPSData(snapped);
     }

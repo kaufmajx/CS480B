@@ -17,6 +17,7 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
 
   /** Manages permanent labels. */
   private PermanentLabelManager labels;
+  private StreetSegment firstSegment;
 
   /**
    * Creates a label-setting algorithm.
@@ -27,7 +28,23 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
   public LabelSettingAlgorithm(final PermanentLabelManager labels)
   {
     this.labels = labels;
+    this.firstSegment = null;
   }
+
+  /**
+   * Creates a label-setting algorithm that avoids an immediate U-turn.
+   *
+   * @param labels
+   *          the permanent label manager
+   * @param firstSegment
+   *          the segment the vehicle is already traveling on
+   */
+  public LabelSettingAlgorithm(final PermanentLabelManager labels, final StreetSegment firstSegment)
+  {
+    this.labels = labels;
+    this.firstSegment = firstSegment;
+  }
+
   /**
    * Finds the shortest path from an origin to a destination.
    *
@@ -51,16 +68,21 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
     }
 
     labels.makePermanent(origin);
-    
+
     Map<String, StreetSegment> result = new HashMap<>();
     int i = origin;
+    boolean firstStep = true;
     while (i != destination)
     {
       Intersection is = net.getIntersection(i);
       for (StreetSegment ss : is.getOutbound())
       {
+        if (shouldSkipOnFirstStep(ss, is, firstStep))
+          continue;
+
         labels.adjustHeadValue(ss);
       }
+      firstStep = false;
       Label tinyLabel = labels.getSmallestLabel();
       if (tinyLabel == null)
         break;
@@ -83,5 +105,54 @@ public class LabelSettingAlgorithm extends AbstractShortestPathAlgorithm
       current = pred.getTail();
     }
     return result;
+  }
+
+  /**
+   * Determines if this segment would immediately reverse the segment already being traveled.
+   *
+   * @param segment
+   *          the candidate outbound segment
+   * @param intersection
+   *          the current intersection
+   * @param firstStep
+   *          true when processing the first route node
+   * @return true if the segment should be skipped
+   */
+  private boolean shouldSkipOnFirstStep(final StreetSegment segment,
+      final Intersection intersection, final boolean firstStep)
+  {
+    return firstStep && firstSegment != null && isImmediateReverse(segment)
+        && hasNonReverseOutbound(intersection);
+  }
+
+  /**
+   * Determines if the segment goes directly back to the previous node.
+   *
+   * @param segment
+   *          the candidate segment
+   * @return true if the candidate is an immediate reverse
+   */
+  private boolean isImmediateReverse(final StreetSegment segment)
+  {
+    return segment.getTail() == firstSegment.getHead()
+        && segment.getHead() == firstSegment.getTail();
+  }
+
+  /**
+   * Determines if the current intersection has at least one non-reverse exit.
+   *
+   * @param intersection
+   *          the current intersection
+   * @return true if there is another way to leave the intersection
+   */
+  private boolean hasNonReverseOutbound(final Intersection intersection)
+  {
+    for (StreetSegment segment : intersection.getOutbound())
+    {
+      if (!isImmediateReverse(segment))
+        return true;
+    }
+
+    return false;
   }
 }
