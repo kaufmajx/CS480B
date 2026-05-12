@@ -1,0 +1,116 @@
+package graph;
+
+import feature.StreetSegment;
+
+/**
+ * Label objects are used in label setting and label correcting algorithms.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1
+ */
+public class Label
+{
+  private boolean permanent;
+  private double value;
+  private int id;
+  private StreetSegment predecessor;
+
+  /**
+   * Default Label constructor.
+   */
+  public Label()
+  {
+    // Change this to the proper id
+    this(0);
+  }
+
+  /**
+   * Label constructor with id as a parameter.
+   * 
+   * @param id
+   *          the id of the label
+   */
+  public Label(final int id)
+  {
+    this.id = id;
+    permanent = false;
+    value = Double.POSITIVE_INFINITY; // Current 'shortest path' starts at infinity far away
+    predecessor = null;
+  }
+
+  /**
+   * Method that adjusts the value and predecessor attributes of the label when the new value is
+   * less than the current one.
+   * 
+   * @param possibleValue
+   * @param possibleStreetSegment
+   */
+  public void adjustValue(final double possibleValue, final StreetSegment possibleStreetSegment)
+  {
+    if (this.value > possibleValue)
+    {
+      this.value = possibleValue;
+      this.predecessor = possibleStreetSegment;
+    }
+  }
+
+  /**
+   * Getter for ID.
+   * 
+   * @return the id
+   */
+  public int getID()
+  {
+    return this.id;
+  }
+
+  /**
+   * Getter for predecessor.
+   * 
+   * @return predecessor
+   */
+  public StreetSegment getPredecessor()
+  {
+    return this.predecessor;
+  }
+
+  /**
+   * Getter for value.
+   * 
+   * @return value
+   */
+  public double getValue()
+  {
+    return this.value;
+  }
+
+  /**
+   * Getter for permanent.
+   * 
+   * @return permanent
+   */
+  public boolean isPermanent()
+  {
+    return this.permanent;
+  }
+
+  /**
+   * Setter for permanent.
+   */
+  public void makePermanent()
+  {
+    this.permanent = true;
+  }
+
+  /**
+   * Setter for value.
+   * 
+   * @param value
+   *          the value to assign to the current label
+   */
+  public void setValue(final double value)
+  {
+    this.value = value;
+  }
+
+}
