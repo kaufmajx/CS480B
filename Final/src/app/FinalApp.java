@@ -19,6 +19,8 @@ import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 
+import com.fazecast.jSerialComm.SerialPort;
+
 import dataprocessing.Geocoder;
 import feature.Street;
 import feature.StreetSegment;
@@ -75,6 +77,9 @@ public class FinalApp
   private StreetSegment originSegment;
   private StreetSegment destinationSegment;
   private StreetSegment currentGPSSegment;
+
+  // Travel direction at the moment origin was set; picks head vs tail at calc time.
+  private boolean originDirectionAgrees = true;
 
   private MapMatcher matcher;
   private Map<String, Street> streets;
@@ -171,33 +176,32 @@ public class FinalApp
 
       /* GPS */
       // Find the right serial port
-      // SerialPort[] ports = SerialPort.getCommPorts();
-      // String gpsPath = null;
-      // for (SerialPort port : ports)
-      // {
-      // String description = port.getPortDescription();
-      // String path = port.getSystemPortPath();
-      // if (description.indexOf("GPS") >= 0)
-      // gpsPath = path;
-      // }
-      //
-      // // Setup the serial port
-      // SerialPort gps = SerialPort.getCommPort(gpsPath);
-      // gps.openPort();
-      // gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-      // InputStream is = gps.getInputStream();
-      //
-      //
-      // // Setup the GPSReaderTask
-      // GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
-      // gpsReader.addGPSObserver(this);
-      // frame.setVisible(true);
-      // gpsReader.execute();
+      SerialPort[] ports = SerialPort.getCommPorts();
+      String gpsPath = null;
+      for (SerialPort port : ports)
+      {
+        String description = port.getPortDescription();
+        String path = port.getSystemPortPath();
+        if (description.indexOf("GPS") >= 0)
+          gpsPath = path;
+      }
 
-      GPSSimulator gps = new GPSSimulator("rockingham.gps");
+      // Setup the serial port
+      SerialPort gps = SerialPort.getCommPort(gpsPath);
+      gps.openPort();
+      gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
       InputStream is = gps.getInputStream();
 
+      // Setup the GPSReaderTask
       GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
+      gpsReader.addGPSObserver(this);
+      frame.setVisible(true);
+      gpsReader.execute();
+
+      // GPSSimulator gps = new GPSSimulator("rockingham.gps");
+      // InputStream is = gps.getInputStream();
+      //
+      // GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
 
       gpsReader.addGPSObserver(this);
 
@@ -225,7 +229,6 @@ public class FinalApp
     double lon = gpgga.getLongitude();
     double lat = gpgga.getLatitude();
 
-
     System.out.printf("Pre-matched: long=%.2f lat=%.2f\n", lon, lat);
 
     if (lon == 0 && lat == 0)
@@ -235,7 +238,6 @@ public class FinalApp
 
     System.out.println("Lat " + lat);
     System.out.println("Lon " + lon);
-
 
     if (matcher.match(lon, lat))
     {
@@ -277,10 +279,12 @@ public class FinalApp
     if (offRouteFixes >= OFF_ROUTE_FIX_LIMIT)
     {
       offRouteFixes = 0;
-      System.out.printf("REROUTE from node %d to node %d%n", currentGPSSegment.getHead(),
-          destinationSegment.getHead());
-      startRouteCalculation(currentGPSSegment.getHead(), destinationSegment.getHead(),
-          currentGPSSegment, false);
+      // Route from the endpoint we are driving toward, not always head.
+      int originNode = matcher.matchedDirectionAgrees ? currentGPSSegment.getHead()
+          : currentGPSSegment.getTail();
+      System.out.printf("REROUTE from node %d to node %d (dirAgrees=%b)%n", originNode,
+          destinationSegment.getHead(), matcher.matchedDirectionAgrees);
+      startRouteCalculation(originNode, destinationSegment.getHead(), currentGPSSegment, false);
     }
   }
 
@@ -304,12 +308,15 @@ public class FinalApp
     if (ac.equals(GPS_ORIGIN))
     {
       originSegment = currentGPSSegment;
+
+      // grab travel direction so Calculate uses the right endpoint later.
+      originDirectionAgrees = matcher.matchedDirectionAgrees;
     }
 
     if (ac.equals(CALCULATE))
     {
-      startRouteCalculation(originSegment.getHead(), destinationSegment.getHead(), originSegment,
-          true);
+      int originNode = originDirectionAgrees ? originSegment.getHead() : originSegment.getTail();
+      startRouteCalculation(originNode, destinationSegment.getHead(), originSegment, true);
     }
 
     if (ac.equals(EXIT))
@@ -373,6 +380,9 @@ public class FinalApp
       if (mode == SET_ORIGIN)
       {
         originSegment = highlighted.get(segmentIDs.get(0));
+
+        // Geocoded origin has no direction; head() is the default
+        originDirectionAgrees = true;
       }
       else if (mode == SET_DESTINATION)
       {
@@ -392,7 +402,8 @@ public class FinalApp
     reroutePending = true;
     routeStartSegment = startSegment;
 
-    alg = new LabelSettingAlgorithm(new PermanentLabelHeap(HEAP_D, network.size()));
+    // startSegment blocks an immediate U-turn back onto the segment we're on.
+    alg = new LabelSettingAlgorithm(new PermanentLabelHeap(HEAP_D, network.size()), startSegment);
     task = new PathFindingWorker(alg, origin, destination, network, document, panel);
     task.addPropertyChangeListener(this);
 

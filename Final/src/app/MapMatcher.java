@@ -11,33 +11,65 @@ import feature.StreetSegment;
 import geography.AbstractMapProjection;
 import geography.PieceWiseLinearCurve;
 
+/**
+ * Snaps a raw GPS point to the nearest street segment, preferring segments whose direction agrees
+ * with the vehicle's travel bearing.
+ *
+ * @author Jelal Kaufman, Tenley Kennett
+ * @version 1.0
+ */
 public class MapMatcher
 {
+  // Max snap distance, km
+  private static final double MAX_CORRECTION_DIST = 0.035;
 
-  // how far a segment can be in degrees before it's ignored
-  private static final double MAX_CORRECTION_DIST = 0.035; // in km
+  // Max bearing gap before a candidate is treated as a cross-street, degrees
+  private static final double MAX_BEARING_DIFF = 45.0;
 
-  private final List<StreetSegment> segments;
-  private final AbstractMapProjection proj; // ADD
-
-  // previous fix (for bearing)
+  // Number of recent fixes kept for the ongoing bearing estimate
   private static final int BEARING_HISTORY = 5;
+
+  // Min displacement before the rolling bearing is trusted, km
+  private static final double MIN_BEARING_DIST = 0.005; // 5 meters
+
+  // closestPoint() return-array indices (for reference)
+  private static final int FOOT_X = 0;
+  private static final int FOOT_Y = 1;
+  private static final int FOOT_DIST = 2;
+  private static final int SUB_INDEX = 3;
+
+  // All candidate segments, made once at construction
+  private final List<StreetSegment> segments;
+
+  // Projection between (lon, lat) degrees and the local km grid
+  private final AbstractMapProjection proj;
+
+  // Sliding window of recent projected fixes [kmX, kmY], oldest at index 0
   private final List<double[]> recentFixes = new ArrayList<>();
 
-  private double prevLat = Double.NaN;
-  private double prevLon = Double.NaN;
-
-  // results of last match() call
+  // Segment the last fix snapped to, or null
   public StreetSegment matchedSegment;
+
+  // Snapped longitude & latitude, degrees
   public double matchedLon;
   public double matchedLat;
+
+  // Perpendicular distance from raw fix to snap point, km
   public double matchedDist;
 
-  public MapMatcher(final Map<String, Street> streets, AbstractMapProjection proj)
-  {
-    this.proj = proj; // ADD
+  // True if travel direction agrees with matchedSegment's tail -> head
+  public boolean matchedDirectionAgrees = true;
 
-    // populate all street segments
+  /**
+   * Builds a matcher over every segment in the supplied street map.
+   *
+   * @param streets
+   * @param proj
+   */
+  public MapMatcher(final Map<String, Street> streets, final AbstractMapProjection proj)
+  {
+    this.proj = proj;
+
     segments = new ArrayList<>();
     for (Street s : streets.values())
     {
@@ -50,88 +82,84 @@ public class MapMatcher
   }
 
   /**
-   * Match a GPS point to the nearest street arc.
-   * 
+   * Snaps a raw GPS fix to most plausible segment + updates 'matched' fields. Prefers
+   * same-direction candidate, but falls back to the closest reverse-direction candidate when none
+   * exists.
+   *
    * @param lon
+   *          raw GPS longitude, in degrees
    * @param lat
-   * @return
+   *          raw GPS latitude, in degrees
+   * @return true if a segment within range was found
    */
-  public boolean match(double lon, double lat)
+  public boolean match(final double lon, final double lat)
   {
-    // Project GPS fix from degrees into km (same as street vertices)
+
+    // Translate coordinates into km
     double[] km = proj.forward(new double[] {lon, lat});
     double kmLon = km[0];
     double kmLat = km[1];
 
-    // TEMP: print the projected GPS point so we can compare to vertices
-    System.out.printf("GPS in km: %.4f, %.4f%n", kmLon, kmLat);
+    Double bearing = travelBearing(kmLon, kmLat);
 
-    Double bearing = travelBearing(kmLon, kmLat); // handles its own history
-    // prevLon = lon;
-    // prevLat = lat;
-
-    // reset results
     matchedSegment = null;
-    matchedLon = lon; // keep these in degrees — panel expects degrees
+    matchedLon = lon;
     matchedLat = lat;
     matchedDist = Double.MAX_VALUE;
+    matchedDirectionAgrees = true;
 
     for (StreetSegment seg : segments)
     {
-      List<double[]> pts = vertices(seg); // already in km
+      List<double[]> pts = vertices(seg);
       if (pts.size() < 2)
+        continue; // only 0-1 point. not enough to be a line
+
+      double[] closest = closestPoint(kmLon, kmLat, pts);
+      if (closest[FOOT_DIST] > MAX_CORRECTION_DIST)
+        continue; // segment is too far away to be a plausible snap target.
+
+      // Direction status of this candidate
+      boolean agrees = true;
+      if (bearing != null) // if we haven't established a direction yet, skip
       {
-        continue;
+        // find compass bearing of the specific sub-segment so we can compare it to the car's
+        // actual direction of travel.
+        double arcBearing = bearing(pts, (int) closest[SUB_INDEX]);
+        double sameDirDiff = angularDiff(bearing, arcBearing);
+        double oppDirDiff = angularDiff(bearing, (arcBearing + 180.0) % 360.0);
+
+        if (Math.min(sameDirDiff, oppDirDiff) > MAX_BEARING_DIFF)
+          continue; // neither the arc nor the reverse aligns with travel, so this is a
+                    // cross-street, not the road we're on
+
+        // is the car driving WITH the segment's tail->head arrow (true) or AGAINST it (false).
+        agrees = sameDirDiff <= oppDirDiff;
       }
 
-      double[] closest = closestPoint(kmLon, kmLat, pts); // compare km to km
-
-      if (closest[2] > MAX_CORRECTION_DIST)
-        continue;
-
-      if (bearing != null) // only heading-filter if not already very close
+      // Closest segment wins outright. Record whichever direction status came with it so
+      // FinalApp can pick head vs tail correctly when routing.
+      if (closest[FOOT_DIST] < matchedDist)
       {
-        double arcBearing = bearing(pts, (int) closest[3]); // closest[3] = distance from GPS to F
-        double diff = Math.min(angularDiff(bearing, arcBearing),
-            angularDiff(bearing, (arcBearing + 180) % 360));
-
-//        // # TEMP
-//        System.out.printf("  seg %s  travelBearing=%.1f  arcBearing=%.1f  diff=%.1f%n", seg.getID(),
-//            bearing, arcBearing, diff);
-
-        if (diff > 45.0)
-          continue;
-      }
-
-      if (closest[2] < matchedDist)
-      {
+        double[] deg = proj.inverse(new double[] {closest[FOOT_X], closest[FOOT_Y]});
         matchedSegment = seg;
-        matchedDist = closest[2];
-
-        // Convert the matched km point back to degrees for the panel
-        double[] deg = proj.inverse(new double[] {closest[0], closest[1]});
+        matchedDist = closest[FOOT_DIST];
         matchedLon = deg[0];
         matchedLat = deg[1];
-
+        matchedDirectionAgrees = agrees;
       }
-
     }
 
     return matchedSegment != null;
   }
 
-  /*************/
-  /** HELPERS **/
-  /*************/
-
   /**
-   * Get the lon/lat vertices of a street segment's Path2D curve.
-   * 
+   * Extracts a segment's vertices as a list of [kmX, kmY] vertex pairs in tail->head order.
+   *
    * @param seg
-   *          segment to be verteci-ified
-   * @return plain list of lon/lat pairs found on the curve
+   *          segment to flatten
+   * @return polyline vertices in projected km; empty if the segment shape is not a polyline
    */
-  private List<double[]> vertices(StreetSegment seg)
+  private List<double[]> vertices(final StreetSegment seg)
   {
     List<double[]> pts = new ArrayList<>();
     if (!(seg.getGeographicShape() instanceof PieceWiseLinearCurve))
@@ -139,21 +167,13 @@ public class MapMatcher
 
     PieceWiseLinearCurve piecewise = (PieceWiseLinearCurve) seg.getGeographicShape();
     PathIterator pi = piecewise.getShape().getPathIterator(null);
-
-    // currCord[0] = x, currCord[1] = y. others are obsolete (ex. bezier curve)
     double[] currCord = new double[6];
 
     while (!pi.isDone())
     {
-      // fill currCord with coordinates of this path & return its TYPE
       int type = pi.currentSegment(currCord);
-
-      // SEG_MOVETO (start of the curve, SEG_LINETO (every other point)
       if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO)
-      {
         pts.add(new double[] {currCord[0], currCord[1]});
-      }
-
       pi.next();
     }
 
@@ -161,46 +181,39 @@ public class MapMatcher
   }
 
   /**
-   * Find the closest point to a lon/lat from a list of points.
-   * 
-   * @param lon
-   * @param lat
+   * Returns the foot of the perpendicular from GPS to the closest sub-segment of a polyline, the
+   * distance, sub-segment index, and parametric position.
+   *
+   * @param x
+   *          query x in projected km
+   * @param y
+   *          query y in projected km
    * @param pts
-   * @return closest point (lon, lat, distance, sub-seg index)
+   *          polyline vertices in km, tail->head order
+   * @return [footX, footY, dist, subIndex, t] in km / km / km / int / [0,1]; null if pts < 2
    */
-  private double[] closestPoint(double lon, double lat, List<double[]> pts)
+  private double[] closestPoint(final double x, final double y, final List<double[]> pts)
   {
     double bestDist = Double.MAX_VALUE;
     double[] best = null;
 
     for (int i = 0; i < pts.size() - 1; i++)
     {
-      double ax = pts.get(i)[0], ay = pts.get(i)[1]; // start of segment
-      double bx = pts.get(i + 1)[0], by = pts.get(i + 1)[1]; // end of segment
+      double ax = pts.get(i)[0], ay = pts.get(i)[1];
+      double bx = pts.get(i + 1)[0], by = pts.get(i + 1)[1];
 
-      double dx = bx - ax, dy = by - ay; // vector from A to B (direction of segment)
+      double dx = bx - ax, dy = by - ay;
 
-      // "t is how far along AB you need to walk so that you're standing directly below the GPS
-      // point."
-      // t tells you where along the segment, F is the actual coordinates of that place.
-      double t = ((lon - ax) * dx + (lat - ay) * dy) / (dx * dx + dy * dy);
-      t = Math.max(0, Math.min(1, t)); // clamp t so it falls along 0-1
+      double t = ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy);
+      t = Math.max(0.0, Math.min(1.0, t));
 
-      // Calculate F (actual closest point on segment)
-      double fx = ax + t * dx; // F.lon = A.lon + t * (B.lon - A.lon)
-      double fy = ay + t * dy; // F.lat = A.lat + t * (B.lat - A.lat)
-
-      // Calculate distance from GPS to F
-      // cos-corect lon difference b/c lon degrees get physically shorter when u move away from the
-      // equator.
-      // double cosLat = Math.cos(Math.toRadians(lat));
-      // double dist = Math.sqrt(Math.pow((lon - fx) * cosLat, 2) + Math.pow(lat - fy, 2));
-      double dist = Math.sqrt((lon - fx) * (lon - fx) + (lat - fy) * (lat - fy));
+      double fx = ax + t * dx;
+      double fy = ay + t * dy;
+      double dist = Math.sqrt((x - fx) * (x - fx) + (y - fy) * (y - fy));
 
       if (dist < bestDist)
       {
         bestDist = dist;
-        // store: the foot point, distance, and sub-seg index
         best = new double[] {fx, fy, dist, i, t};
       }
     }
@@ -208,65 +221,63 @@ public class MapMatcher
   }
 
   /**
-   * Compass bearing (0=North, clockwise) of sub-segment i.
-   * 
+   * Compass bearing (0=N, clockwise) of sub-segment {code i} of a polyline in the km grid.
+   *
    * @param pts
+   *          polyline vertices in projected km
    * @param i
-   * @return
+   *          index of the sub-segment whose bearing is wanted
+   * @return bearing in degrees in [0, 360)
    */
-  private double bearing(List<double[]> pts, int i)
+  private double bearing(final List<double[]> pts, final int i)
   {
-    double dLon = pts.get(i + 1)[0] - pts.get(i)[0]; // remove cos-correction
-    double dLat = pts.get(i + 1)[1] - pts.get(i)[1];
-    return (Math.toDegrees(Math.atan2(dLon, dLat)) + 360) % 360;
+    double dx = pts.get(i + 1)[0] - pts.get(i)[0]; // how far east does this segment go?
+    double dy = pts.get(i + 1)[1] - pts.get(i)[1]; // how far north does this segment go?
+    return (Math.toDegrees(Math.atan2(dx, dy)) + 360.0) % 360.0;
   }
 
   /**
-   * Smallest angle between two compass bearings [0, 180].
-   * 
+   * Smallest absolute angular distance between two compass bearings.
+   *
    * @param a
+   *          first bearing, degrees
    * @param b
-   * @return
+   *          second bearing, degrees
+   * @return angular difference in [0, 180]
    */
-  private double angularDiff(double a, double b)
+  private double angularDiff(final double a, final double b)
   {
-    double d = Math.abs(a - b) % 360;
-    return d > 180 ? 360 - d : d;
+    double d = Math.abs(a - b) % 360.0;
+    return d > 180.0 ? 360.0 - d : d;
   }
 
   /**
-   * 
-   * @param lon
-   * @param lat
-   * @return
+   * Updates the rolling fix window and returns the current travel bearing, or null when the
+   * displacement is too small to be trusted.
+   *
+   * @param kmX
+   *          newest fix x in projected km
+   * @param kmY
+   *          newest fix y in projected km
+   * @return bearing in degrees [0, 360), or null when not yet reliable
    */
-  private Double travelBearing(double kmLon, double kmLat)
+  private Double travelBearing(final double kmX, final double kmY)
   {
-    // if (Double.isNaN(prevLon))
-    // return null;
-    recentFixes.add(new double[] {kmLon, kmLat});
-
+    recentFixes.add(new double[] {kmX, kmY}); // push newest
     if (recentFixes.size() > BEARING_HISTORY)
-    {
-      recentFixes.remove(0);
-    }
+      recentFixes.remove(0); // drop oldest
 
     if (recentFixes.size() < 2)
-    {
-      return null; // need at least 2 fixes to derive a bearing
-    }
+      return null;
 
     double[] oldest = recentFixes.get(0);
     double[] newest = recentFixes.get(recentFixes.size() - 1);
+    double dx = newest[0] - oldest[0]; // find change in E-W displacement
+    double dy = newest[1] - oldest[1]; // find change in N-S displacement
 
-    double dLon = newest[0] - oldest[0];
-    double dLat = newest[1] - oldest[1];
-    double dist = Math.sqrt(dLon * dLon + dLat * dLat);
+    if (Math.sqrt(dx * dx + dy * dy) < MIN_BEARING_DIST)
+      return null; // if Euclidean distance traveled is negligible, ignore
 
-    // If we've barely moved, don't trust the bearing at all
-    if (dist < 0.005)
-      return null; // less than 5 meters in km space
-
-    return (Math.toDegrees(Math.atan2(dLon, dLat)) + 360) % 360;
+    return (Math.toDegrees(Math.atan2(dx, dy)) + 360.0) % 360.0;
   }
 }
