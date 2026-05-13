@@ -19,8 +19,6 @@ import javax.swing.JMenuItem;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 
-import com.fazecast.jSerialComm.SerialPort;
-
 import dataprocessing.Geocoder;
 import feature.Street;
 import feature.StreetSegment;
@@ -45,6 +43,12 @@ import gui.DynamicCartographyPanel;
 import gui.GeocodeDialog;
 import gui.StreetSegmentCartographer;
 
+/**
+ * FinalApp runnable.
+ * 
+ * @author Jelal Kaufman & Tenley Kennett
+ * @version 1
+ */
 public class FinalApp
     implements Runnable, ActionListener, StreetSegmentObserver, PropertyChangeListener, GPSObserver
 {
@@ -107,10 +111,6 @@ public class FinalApp
 
       streets = new HashMap<String, Street>();
 
-      // TEMP: find where the GPS area projects to, and where the streets actually are
-      double[] gpsKm = proj.forward(new double[] {-78.868, 38.442});
-      System.out.printf("GPS area in km:       %.4f, %.4f%n", gpsKm[0], gpsKm[1]);
-
       document = sReader.read(streets);
 
       matcher = new MapMatcher(streets, proj);
@@ -119,7 +119,7 @@ public class FinalApp
 
       /* PANEL */
 
-      panel = new DynamicCartographyPanel<>(document, new StreetSegmentCartographer(), proj);
+      panel = new DynamicCartographyPanel<StreetSegment>(document, new StreetSegmentCartographer<Object>(), proj);
 
       frame = new JFrame("Navigation");
       frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -176,32 +176,32 @@ public class FinalApp
 
       /* GPS */
       // Find the right serial port
-      SerialPort[] ports = SerialPort.getCommPorts();
-      String gpsPath = null;
-      for (SerialPort port : ports)
-      {
-        String description = port.getPortDescription();
-        String path = port.getSystemPortPath();
-        if (description.indexOf("GPS") >= 0)
-          gpsPath = path;
-      }
-
-      // Setup the serial port
-      SerialPort gps = SerialPort.getCommPort(gpsPath);
-      gps.openPort();
-      gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-      InputStream is = gps.getInputStream();
-
-      // Setup the GPSReaderTask
-      GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
-      gpsReader.addGPSObserver(this);
-      frame.setVisible(true);
-      gpsReader.execute();
-
-      // GPSSimulator gps = new GPSSimulator("rockingham.gps");
+      // SerialPort[] ports = SerialPort.getCommPorts();
+      // String gpsPath = null;
+      // for (SerialPort port : ports)
+      // {
+      // String description = port.getPortDescription();
+      // String path = port.getSystemPortPath();
+      // if (description.indexOf("GPS") >= 0)
+      // gpsPath = path;
+      // }
+      //
+      // // Setup the serial port
+      // SerialPort gps = SerialPort.getCommPort(gpsPath);
+      // gps.openPort();
+      // gps.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
       // InputStream is = gps.getInputStream();
       //
+      // // Setup the GPSReaderTask
       // GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
+      // gpsReader.addGPSObserver(this);
+      // frame.setVisible(true);
+      // gpsReader.execute();
+
+       GPSSimulator gps = new GPSSimulator("rockingham.gps");
+       InputStream is = gps.getInputStream();
+      
+       GPSReaderTask gpsReader = new GPSReaderTask(is, "GPGGA");
 
       gpsReader.addGPSObserver(this);
 
@@ -229,15 +229,10 @@ public class FinalApp
     double lon = gpgga.getLongitude();
     double lat = gpgga.getLatitude();
 
-    System.out.printf("Pre-matched: long=%.2f lat=%.2f\n", lon, lat);
-
     if (lon == 0 && lat == 0)
     {
       return; // nothing happening yet
     }
-
-    System.out.println("Lat " + lat);
-    System.out.println("Lon " + lon);
 
     if (matcher.match(lon, lat))
     {
@@ -247,48 +242,48 @@ public class FinalApp
       String snapped = GPGGASentence.buildGPGGA(matcher.matchedLat, matcher.matchedLon);
 
       panel.handleGPSData(snapped);
-      System.out.println("MatchedLon " + matcher.matchedLon);
-      System.out.println("MatchedLat " + matcher.matchedLat);
-      // System.out.printf("Matched arc %s residual=%.1f m%n", matcher.matchedSegment.getID(),
-      // matcher.matchedDist * 111000);
     }
     else
     {
       panel.handleGPSData(sentence);
-      System.out.println("No match — using raw GPS");
     }
 
   }
 
+  /**
+   * Method to check if user is off route.
+   */
   private void checkForReroute()
   {
+    // make sure data is good and there are no nulls
     if (destinationSegment == null || currentGPSSegment == null || currentRoute.isEmpty()
         || reroutePending)
     {
       return;
     }
 
+    // check if user is still on the route
     if (currentRoute.containsKey(currentGPSSegment.getID()))
     {
       offRouteFixes = 0;
       return;
     }
 
+    // for each tick spent off route, add a fix
     offRouteFixes++;
 
+    // recalculate route if user is confirmed off the original route
     if (offRouteFixes >= OFF_ROUTE_FIX_LIMIT)
     {
       offRouteFixes = 0;
       // Route from the endpoint we are driving toward, not always head.
       int originNode = matcher.matchedDirectionAgrees ? currentGPSSegment.getHead()
           : currentGPSSegment.getTail();
-      System.out.printf("REROUTE from node %d to node %d (dirAgrees=%b)%n", originNode,
-          destinationSegment.getHead(), matcher.matchedDirectionAgrees);
       startRouteCalculation(originNode, destinationSegment.getHead(), currentGPSSegment, false);
     }
   }
 
-  /* MENUS */
+  /* menus */
 
   @Override
   public void actionPerformed(final ActionEvent evt)
@@ -391,6 +386,18 @@ public class FinalApp
     }
   }
 
+  /**
+   * Method to start recalculations if user is off route.
+   * 
+   * @param origin
+   *          the starting node
+   * @param destination
+   *          the ending node
+   * @param startSegment
+   *          the current streetSegment
+   * @param showDialog
+   *          a boolean for whether or not to show the calcuation dialog box
+   */
   private void startRouteCalculation(final int origin, final int destination,
       final StreetSegment startSegment, final boolean showDialog)
   {

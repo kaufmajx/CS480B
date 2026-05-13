@@ -64,21 +64,17 @@ public class Geocoder
   public List<double[]> geocode(final String canonicalName, final int streetNumber,
       final List<String> segmentIDs)
   {
-    // System.out.println("\nwe r geocoding()");
     List<double[]> results = new ArrayList<double[]>();
 
     Street street = streets.get(canonicalName);
     if (street == null)
     {
-      // System.out.println("No " + street + " Street :(");
       return results;
     }
 
     // Now find the matched segment(s) to return interpolated coordinates
 
     Iterator<StreetSegment> it = street.getSegments();
-    System.out.println("=== Geocoding: '" + canonicalName + "' #" + streetNumber + " ===");
-    System.out.println("Segments found on street: ");
 
     while (it.hasNext())
     {
@@ -111,7 +107,6 @@ public class Geocoder
         if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO)
         {
           points.add(new double[] {coords[0], coords[1]});
-          // System.out.println("coords: " + coords[0] + ", " + coords[1]);
         }
         pi.next();
       }
@@ -163,11 +158,8 @@ public class Geocoder
 
         accumulated += segLen;
       }
-      System.out.println("    -> Interpolated point: (" + point[0] + ", " + point[1] + ")");
       results.add(point);
     }
-
-    System.out.println("Total results: " + results.size());
 
     return results;
   }
